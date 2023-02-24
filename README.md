@@ -1,8 +1,8 @@
-# Ansible Role: Template
+# Ansible Role: svc
 
-[![CI](https://github.com/netr0m/ansible-role-template/workflows/CI/badge.svg?event=push)](https://github.com/netr0m/ansible-role-template/actions?query=workflow%3ACI)
+[![CI](https://github.com/netr0m/ansible-role-svc/workflows/CI/badge.svg?event=push)](https://github.com/netr0m/ansible-role-svc/actions?query=workflow%3ACI)
 
-Ansible role template
+Ansible role svc
 
 ## Requirements
 
@@ -26,7 +26,7 @@ None
   gather facts: true
 
   roles:
-    - { role: netr0m.template }
+    - { role: netr0m.svc }
 ...
 
 ```
