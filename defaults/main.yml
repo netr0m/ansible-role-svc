@@ -1,9 +1,120 @@
 ---
-### All ###
-# Example variable
-example_var: 'some string'
-# Example list variable
-example_list:
-  - 'something'
-  - 'something else'
+# Environment
+svc_env: "{{ lookup('env', 'ENVIRONMENT') | default('production') }}"
+# Username of the user owning the files
+svc_user_name: 'butler'
+# Group name of the group that should own the files
+svc_group_name: 'butlers'
+# Optionally provide the UID of the user. If absent, the UID will be looked up
+svc_user_uid: undefined
+# Optionally provide the GID of the group. If absent, the GID will be looked up
+svc_group_gid: undefined
+# Timezone
+svc_tz: Etc/UTC
+# Domain name
+svc_domain: local
+
+### Directories ###
+# Manage directories
+svc_manage_directories: true
+# Directory to store service data
+svc_directory:
+  path: '/opt/svc'
+  # Default permissions
+  owner: "{{ svc_user_name }}"
+  group: "{{ svc_group_name }}"
+  mode: 740
+# Subdirectories
+svc_subdirectories:
+  cfg:
+    path: "{{ svc_directory.path }}/cfg"
+  log:
+    path: "{{ svc_directory.path }}/log"
+  data:
+    path: "{{ svc_directory.path }}/data"
+
+### Packages ###
+# Manage packages
+svc_manage_packages: true
+# Packages to install. See vars/<ansible_os_family>.yml
+svc_packages: []
+# Pip packages to install
+svc_packages_pip:
+  - 'docker'
+
+### Services ###
+# Default restart policy
+svc_restart_policy: 'always'
+# Configure Traefik
+svc_use_traefik: true
+
+### Traefik ###
+# Directories for Traefik
+svc_traefik_directories:
+  cfg:
+    path: "{{ svc_subdirectories.cfg.path }}/traefik"
+  log:
+    path: "{{ svc_subdirectories.log.path }}/traefik"
+
+# Log level
+svc_traefik_log_level: 'INFO'
+# Whether to enable the Traefik dashboard
+svc_traefik_enable_dashboard: true
+# Whether to enable DEBUG mode
+svc_traefik_debug: false
+# Whether to allow insecure access
+svc_traefik_insecure: false
+# Whether to expose Docker containers by default
+svc_traefik_exposed_by_default: false
+# Whether to automatically retrieve TLS certificates. Requires 'svc_traefik_dns_challenge_provider' and 'svc_traefik_env_vars_acme'.
+svc_traefik_automatic_https: true
+
+# When svc_traefik_automatic_https is true
+svc_traefik_dns_challenge_provider: 'cloudflare'
+# Whether to use the staging servers (recommended for testing)
+svc_traefik_letsencrypt_staging: false
+# Environment variables for Traefik to automatically acquire TLS certificates
+svc_traefik_env_vars_acme:
+  TRAEFIK_CERTIFICATESRESOLVERS_cloudflare_ACME_EMAIL: ''
+  CF_API_EMAIL: "{{ lookup('env', 'CF_API_EMAIL') | default('noone@domain.tld') }}"
+  CF_API_KEY: "{{ lookup('env', 'CF_API_KEY') | default('undefined') }}"
+# Environment variables for the Traefik container
+svc_traefik_env_vars:
+  PUID: "{{ svc_user_uid }}"
+  PGID: "{{ svc_group_gid }}"
+  TZ: "{{ svc_tz | default('Etc/UTC') }}"
+
+# Traefik container settings
+svc_traefik_container:
+  hostname: traefik
+  image: traefik:latest
+  restart_policy: always
+  env_vars: "{{ svc_traefik_env_vars | combine(svc_traefik_env_vars_acme) }}"
+  port:
+    http: 80
+    https: 443
+    admin: 8050
+  memory: 1g
+
+# Extra hosts for Traefik. See templates/etc/traefik/config/http.yml
+svc_traefik_extra_hosts: []
+  # - name: example
+  #   shortname: ex
+  #   middlewares: []
+  #   protocol: https
+  #   ip_addr: 10.10.10.10
+  #   port: 8080
+
+# Extra middlewares for Traefik. See templates/etc/traefik/config/http.yml
+svc_traefik_middlewares: {}
+  # example-mwr:
+  #   headers:
+  #     customRequestHeaders:
+  #       Authorization: ''
+  #       X-Forwarded-Proto: 'https'
+
+# Extra certificates for Traefik. See templates/etc/traefik/traefik.yml
+svc_traefik_certificates: []
+  # - crt: /etc/traefik/tls/domain.tld.crt
+  #   key: /etc/traefik/tls/domain.tld.key
 ...

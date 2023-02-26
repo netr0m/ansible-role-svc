@@ -1,0 +1,25 @@
+# {{ ansible_managed }}
+http:
+  routers:
+{% for service in svc_traefik_extra_hosts %}
+    {{ service.shortname }}-rtr:
+      entryPoints:
+        - webSecure
+      middlewares: {{ service.middlewares }}
+      service: {{ service.shortname }}-svc
+      rule: Host(`{{ service.subdomain | default(service.shortname) }}.{{ svc_domain }}`)
+      tls:
+        certResolver: {{ svc_traefik_dns_challenge_provider }}
+
+{% endfor %}
+
+  middlewares: {{ svc_traefik_middlewares }}
+
+  services:
+  {% for service in svc_traefik_extra_hosts %}
+  {{ service.shortname }}-svc:
+      loadBalancer:
+        servers:
+          - url: {{ service.protocol | default(https) }}://{{ service.ip_addr }}:{{ service.port }}
+
+  {% endfor %}

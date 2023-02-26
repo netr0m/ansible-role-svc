@@ -1,0 +1,7 @@
+---
+### Packages ###
+# Packages to install
+svc_packages:
+  - 'python3'
+  - 'python3-pip'
+...

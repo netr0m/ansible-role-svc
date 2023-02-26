@@ -1,0 +1,20 @@
+---
+- name: Update apt cache
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 1800
+
+- name: Ensure wanted packages are present
+  ansible.builtin.apt:
+    name: "{{ svc_packages }}"
+    state: present
+    install_recommends: false
+  when: svc_packages | length > 0
+
+- name: Ensure not needed dependency packages are absent
+  become: true
+  ansible.builtin.apt:
+    autoclean: true
+    autoremove: true
+...

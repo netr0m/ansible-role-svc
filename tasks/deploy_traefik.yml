@@ -1,0 +1,80 @@
+---
+- name: Manage traefik config
+  block:
+    - name: Ensure traefik config directory is present
+      ansible.builtin.file:
+        path: "{{ svc_traefik_directories.cfg.path }}"
+        state: directory
+        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
+        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
+        mode: "{{ svc_traefik_directories.cfg.mode | default(svc_subdirectories.cfg.mode) | default(svc_directory.mode) }}"
+
+    - name: Ensure traefik configs subdirectory is present
+      ansible.builtin.file:
+        path: "{{ svc_traefik_directories.cfg.path }}/config"
+        state: directory
+        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
+        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
+        mode: "{{ svc_traefik_directories.cfg.mode | default(svc_subdirectories.cfg.mode) | default(svc_directory.mode) }}"
+
+    - name: Copy traefik config into place
+      ansible.builtin.template:
+        src: etc/traefik/traefik.yml.j2
+        dest: "{{ svc_traefik_directories.cfg.path }}/traefik.yml"
+        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
+        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
+        mode: "{{ svc_traefik_directories.cfg.mode | default(svc_subdirectories.cfg.mode) | default(svc_directory.mode) }}"
+        backup: true
+
+    - name: Copy traefik http config into place
+      ansible.builtin.template:
+        src: etc/traefik/config/http.yml.j2
+        dest: "{{ svc_traefik_directories.cfg.path }}/config/http.yml"
+        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
+        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
+        mode: "{{ svc_traefik_directories.cfg.mode | default(svc_subdirectories.cfg.mode) | default(svc_directory.mode) }}"
+        backup: true
+
+- name: Manage traefik certificates directory
+  block:
+    - name: Ensure traefik letsencrypt directory is present
+      ansible.builtin.file:
+        path: "{{ svc_traefik_directories.cfg.path }}/letsencrypt"
+        state: directory
+        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
+        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
+        mode: 0600
+
+    - name: Check for presence of traefik ACME file
+      ansible.builtin.stat:
+        path: "{{ svc_traefik_directories.cfg.path }}/letsencrypt/acme.json"
+      register: __acme_file_result
+
+    - name: Ensure traefik ACME file permissions
+      ansible.builtin.file:
+        path: "{{ svc_traefik_directories.cfg.path }}/letsencrypt/acme.json"
+        state: "{{ 'file' if __acme_file_result.stat.exists else 'touch' }}"
+        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
+        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
+        mode: 0600
+
+- name: Deploy traefik service
+  community.docker.docker_container:
+    image: "{{ svc_traefik_container.image }}"
+    name: "{{ svc_traefik_container.hostname }}"
+    hostname: "{{ svc_traefik_container.hostname }}"
+    restart_policy: "{{ svc_traefik_container.restart_policy | default(svc_restart_policy) }}"
+    volumes:
+      - "{{ svc_traefik_directories.cfg.path }}/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "{{ svc_traefik_directories.cfg.path }}/config:/etc/traefik/config:ro"
+      - "{{ svc_traefik_directories.cfg.path }}/letsencrypt/acme.json:/etc/traefik/letsencrypt/acme.json:rw"
+      - "{{ svc_traefik_directories.log.path }}:/var/log/traefik:rw"
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "{{ svc_traefik_container.ports.http | default('80') }}:80"
+      - "{{ svc_traefik_container.ports.https | default('443') }}:443"
+      - "{{ svc_traefik_container.ports.admin | default('8080') }}:8080"
+    env: "{{ svc_traefik_container.env_vars }}"
+    memory: "{{ svc_traefik_container.memory | default('1g') }}"
+    recreate: true
+...

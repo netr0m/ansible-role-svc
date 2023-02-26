@@ -1,0 +1,61 @@
+# {{ ansible_managed }}
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+api:
+  dashboard: {{ svc_traefik_enable_dashboard }}
+  insecure: {{ svc_traefik_insecure }}
+  debug: {{ svc_traefik_debug }}
+
+log:
+  level: {{ svc_traefik_log_level }}
+
+accessLog:
+  filePath: /var/log/traefik/access.log
+
+entryPoints:
+  web:
+    address: :80
+  webSecure:
+    address: :443
+
+providers:
+  docker:
+    exposedByDefault: {{ svc_traefik_exposed_by_default }}
+  file:
+    directory: /etc/traefik/config
+
+serversTransport:
+  insecureSkipVerify: true
+
+{% if svc_traefik_automatic_https | bool %}
+certificatesResolvers:
+  {{ svc_traefik_dns_challenge_provider }}:
+    acme:
+{% if svc_traefik_letsencrypt_staging | bool %}
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+{% endif %}
+      storage: /etc/traefik/letsencrypt/acme.json
+      dnsChallenge:
+        provider: {{ svc_traefik_dns_challenge_provider }}
+        delayBeforeCheck: 30
+        resolvers:
+          - 1.1.1.1:53
+          - 1.0.0.1:53
+{% endif %}
+{% if svc_traefik_certificates | length > 0 %}
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: {{ svc_traefik_certificates[0].crt }}
+        keyFile: {{ svc_traefik_certificates[0].key }}
+  {% if svc_traefik_certificates | length > 1 %}
+  certificates:
+  {% for certificate in svc_traefik_certificates %}
+    - certFile: {{ certificate.crt }}
+      keyFile: {{ certificate.key }}
+  {% endfor %}
+  {% endif %}
+{% endif %}

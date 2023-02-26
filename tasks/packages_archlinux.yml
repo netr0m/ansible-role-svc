@@ -1,0 +1,12 @@
+---
+- name: Update pacman cache
+  become: true
+  community.general.pacman:
+    update_cache: true
+
+- name: Ensure wanted packages are present
+  community.general.pacman:
+    name: "{{ svc_packages }}"
+    state: present
+  when: svc_packages | length > 0
+...
