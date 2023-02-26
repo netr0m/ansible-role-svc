@@ -90,7 +90,7 @@ svc_traefik_container:
   image: traefik:latest
   restart_policy: always
   env_vars: "{{ svc_traefik_env_vars | combine(svc_traefik_env_vars_acme) }}"
-  port:
+  ports:
     http: 80
     https: 443
     admin: 8050
