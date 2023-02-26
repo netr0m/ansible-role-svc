@@ -12,8 +12,9 @@ http:
         certResolver: {{ svc_traefik_dns_challenge_provider }}
 
 {% endfor %}
-
+{% if svc_traefik_middlewares %}
   middlewares: {{ svc_traefik_middlewares }}
+{% endif %}
 
   services:
   {% for service in svc_traefik_extra_hosts %}
