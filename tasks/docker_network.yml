@@ -1,0 +1,13 @@
+---
+- name: Ensure svc_hostnet macvlan network is present
+  community.docker.docker_network:
+    name: svc_hostnet
+    state: present
+    driver: macvlan
+
+- name: Ensure svc_net bridge network is present
+  community.docker.docker_network:
+    name: svc_net
+    state: present
+    driver: bridge
+...

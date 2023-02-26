@@ -45,6 +45,8 @@ svc_packages_pip:
 ### Services ###
 # Default restart policy
 svc_restart_policy: 'always'
+# Manage docker networks
+svc_manage_docker_networks: true
 # Configure Traefik
 svc_use_traefik: true
 
