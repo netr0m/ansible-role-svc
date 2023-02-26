@@ -14,7 +14,13 @@ Available variables are listed in [`docs/default-variables.md`](./docs/default-v
 
 ## Dependencies
 
-None
+### Collections
+See [ansible-requirements.yml](./ansible-requirements.yml) for a list
+
+#### Installation
+```sh
+ansible-galaxy collection install -r ansible-requirements.yml
+```
 
 ## Example Playbook
 
