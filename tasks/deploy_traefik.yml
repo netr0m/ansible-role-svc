@@ -78,5 +78,4 @@
       - "{{ svc_traefik_container.ports.admin | default('8050') }}:8080"
     env: "{{ svc_traefik_container.env_vars }}"
     memory: "{{ svc_traefik_container.memory | default('1g') }}"
-    recreate: true
 ...
