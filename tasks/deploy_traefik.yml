@@ -25,6 +25,7 @@
         group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
         mode: "{{ svc_traefik_directories.cfg.mode | default(svc_subdirectories.cfg.mode) | default(svc_directory.mode) }}"
         backup: true
+      register: copy_traefik_config_result
 
     - name: Copy traefik http config into place
       ansible.builtin.template:
@@ -34,6 +35,7 @@
         group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
         mode: "{{ svc_traefik_directories.cfg.mode | default(svc_subdirectories.cfg.mode) | default(svc_directory.mode) }}"
         backup: true
+      register: copy_traefik_http_config_result
 
 - name: Manage traefik certificates directory
   block:
@@ -78,4 +80,5 @@
       - "{{ svc_traefik_container.ports.admin | default('8050') }}:8080"
     env: "{{ svc_traefik_container.env_vars }}"
     memory: "{{ svc_traefik_container.memory | default('1g') }}"
+    recreate: "{{ copy_traefik_config_result.changed or copy_traefik_http_config_result.changed }}"
 ...
