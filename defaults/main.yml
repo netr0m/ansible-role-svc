@@ -45,6 +45,13 @@ svc_packages_pip:
 ### Services ###
 # Default restart policy
 svc_restart_policy: 'always'
+# Default logging options - see https://docs.docker.com/config/containers/logging/configure/
+svc_log_driver: local
+svc_log_options:
+  max-size: 20m
+  max-file: '5'
+  compress: 'true'
+  
 # Manage docker networks
 svc_manage_docker_networks: true
 # Configure Traefik
