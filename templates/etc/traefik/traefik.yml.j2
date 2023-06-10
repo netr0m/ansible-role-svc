@@ -20,6 +20,12 @@ accessLog:
 entryPoints:
   web:
     address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: webSecure
+          scheme: https
+          permanent: true
   webSecure:
     address: :443
 {% if svc_domain != 'local' %}
