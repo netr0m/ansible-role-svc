@@ -1,4 +1,6 @@
 ---
+# Domain name
+svc_domain: local
 # Environment
 svc_env: "{{ lookup('env', 'ENVIRONMENT') | default('production') }}"
 # Username of the user owning the files
@@ -11,8 +13,6 @@ svc_user_uid: undefined
 svc_group_gid: undefined
 # Timezone
 svc_tz: Etc/UTC
-# Domain name
-svc_domain: local
 
 ### Directories ###
 # Manage directories
@@ -51,7 +51,7 @@ svc_log_options:
   max-size: 20m
   max-file: '5'
   compress: 'true'
-  
+
 # Manage docker networks
 svc_manage_docker_networks: true
 # Configure Traefik
@@ -102,7 +102,6 @@ svc_traefik_container:
   ports:
     http: 80
     https: 443
-    admin: 8050
   memory: 1g
 
 # Used as the 'average' parameter for the rate limiting middleware

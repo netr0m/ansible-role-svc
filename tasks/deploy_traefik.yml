@@ -75,10 +75,13 @@
     ports:
       - "{{ svc_traefik_container.ports.http | default('80') }}:80"
       - "{{ svc_traefik_container.ports.https | default('443') }}:443"
-      - "{{ svc_traefik_container.ports.admin | default('8050') }}:8080"
     env: "{{ svc_traefik_container.env_vars }}"
     memory: "{{ svc_traefik_container.memory | default('1g') }}"
     log_driver: "{{ svc_log_driver }}"
     log_options: "{{ svc_log_options }}"
     recreate: true
+    labels:
+      traefik.http.routers.traefik-dash-rtr.rule: "Host(\"{{ svc_traefik_container.hostname }}.{{ svc_domain }}\")"
+      traefik.http.routers.traefik-dash-rtr.entrypoints: webSecure
+      traefik.http.routers.traefik-dash-rtr.service: api@internal
 ...
