@@ -72,8 +72,6 @@
       - "{{ svc_traefik_directories.cfg.path }}/letsencrypt/acme.json:/etc/traefik/letsencrypt/acme.json:rw"
       - "{{ svc_traefik_directories.log.path }}:/var/log/traefik:rw"
       - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - name: svc_net
     ports:
       - "{{ svc_traefik_container.ports.http | default('80') }}:80"
       - "{{ svc_traefik_container.ports.https | default('443') }}:443"
