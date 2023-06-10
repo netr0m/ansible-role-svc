@@ -10,9 +10,12 @@ api:
 
 log:
   level: {{ svc_traefik_log_level }}
+  filePath: /var/log/traefik/traefik.log
+  format: json
 
 accessLog:
   filePath: /var/log/traefik/access.log
+  format: json
 
 entryPoints:
   web:
