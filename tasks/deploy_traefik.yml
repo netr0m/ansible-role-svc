@@ -80,5 +80,5 @@
     memory: "{{ svc_traefik_container.memory | default('1g') }}"
     log_driver: "{{ svc_log_driver }}"
     log_options: "{{ svc_log_options }}"
-    recreate: "{{ copy_traefik_config_result.changed or copy_traefik_http_config_result.changed }}"
+    recreate: true
 ...
