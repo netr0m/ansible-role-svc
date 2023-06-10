@@ -1,2 +1,8 @@
 ---
+svc_traefik_middlewares_default:
+  rate-limit-mwr:
+    rateLimit:
+      average: "{{ svc_traefik_middleware_rate_limit_average }}"
+      burst: "{{ svc_traefik_middleware_rate_limit_burst }}"
+      period: 1s
 ...

@@ -105,6 +105,10 @@ svc_traefik_container:
     admin: 8050
   memory: 1g
 
+# Used as the 'average' parameter for the rate limiting middleware
+svc_traefik_middleware_rate_limit_average: 50
+# Used as the 'burst' parameter for the rate limiting middleware
+svc_traefik_middleware_rate_limit_burst: 100
 # Extra hosts for Traefik. See templates/etc/traefik/config/http.yml
 svc_traefik_extra_hosts: []
   # - name: example
