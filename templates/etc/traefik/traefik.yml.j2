@@ -40,6 +40,7 @@ entryPoints:
 
 providers:
   docker:
+    endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: {{ svc_traefik_exposed_by_default }}
     httpClientTimeout: 300
   file:
