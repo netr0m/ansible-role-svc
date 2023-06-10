@@ -81,6 +81,7 @@
     log_options: "{{ svc_log_options }}"
     recreate: true
     labels:
+      traefik.enable: 'true'
       traefik.http.routers.traefik-dash-rtr.rule: "Host(\"{{ svc_traefik_container.hostname }}.{{ svc_domain }}\")"
       traefik.http.routers.traefik-dash-rtr.entrypoints: webSecure
       traefik.http.routers.traefik-dash-rtr.service: api@internal
