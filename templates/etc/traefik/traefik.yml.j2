@@ -22,6 +22,15 @@ entryPoints:
     address: :80
   webSecure:
     address: :443
+{% if svc_domain != 'local' %}
+    http:
+      tls:
+        certResolver: {{ svc_traefik_dns_challenge_provider }}
+        domains:
+          - main: {{ svc_domain }}
+            sans:
+              - "*.{{ svc_domain }}"
+{% endif %}
   dns:
     address: :53
   dnsUdp:
