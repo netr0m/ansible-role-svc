@@ -12,4 +12,8 @@ svc_traefik_middlewares_default:
       average: "{{ svc_traefik_middleware_rate_limit_average }}"
       burst: "{{ svc_traefik_middleware_rate_limit_burst }}"
       period: 1s
+  redirect-https-mwr:
+    redirectScheme:
+      scheme: https
+      permanent: true
 ...
