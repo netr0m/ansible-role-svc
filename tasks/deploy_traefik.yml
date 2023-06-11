@@ -88,4 +88,23 @@
     networks:
       - name: svc_net
       - name: bridge
+
+- name: Deploy traefik whoami service (debug)
+  community.docker.docker_container:
+    image: traefik/whoami
+    name: whoami
+    hostname: whoami
+    restart_policy: "{{ svc_traefik_container.restart_policy | default(svc_restart_policy) }}"
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.whoami-rtr.rule: "Host(\"whoami.{{ svc_domain }}\")"
+      traefik.http.routers.whoami-rtr.entrypoints: webSecure
+    log_driver: "{{ svc_log_driver }}"
+    log_options: "{{ svc_log_options }}"
+    security_opts:
+      - no-new-privileges:true
+    state: "{{ 'started' if svc_traefik_debug else 'absent' }}"
+    recreate: "{{ 'true' if svc_traefik_debug else 'false' }}"
+    networks:
+      - name: svc_net
 ...
