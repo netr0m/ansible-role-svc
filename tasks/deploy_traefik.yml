@@ -85,4 +85,7 @@
       traefik.http.routers.traefik-dash-rtr.rule: "Host(\"{{ svc_traefik_container.hostname }}.{{ svc_domain }}\")"
       traefik.http.routers.traefik-dash-rtr.entrypoints: webSecure
       traefik.http.routers.traefik-dash-rtr.service: api@internal
+    networks:
+      - name: svc_net
+      - name: bridge
 ...
