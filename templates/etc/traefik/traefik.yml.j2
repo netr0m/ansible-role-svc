@@ -28,6 +28,12 @@ entryPoints:
           permanent: true
   webSecure:
     address: :443
+    forwardedHeaders:
+      trustedIPs:
+        - "127.0.0.1/32"
+        - "10.0.0.0/8"
+        - "192.168.0.0/16"
+        - "172.16.0.0/12"
 {% if svc_domain != 'local' %}
     http:
       tls:
