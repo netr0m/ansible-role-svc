@@ -13,7 +13,7 @@ http:
 
 {% endfor %}
 {% if svc_traefik_middlewares %}
-  middlewares: {{ svc_traefik_middlewares_default | combine(svc_traefik_middlewares) }}
+  middlewares: {{ svc_traefik_middlewares_default | combine(svc_traefik_middlewares) | combine(svc_traefik_middlewares_extra | default({})) }}
 {% endif %}
 
   services:
