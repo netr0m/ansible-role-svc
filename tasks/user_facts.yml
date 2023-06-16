@@ -1,5 +1,6 @@
 ---
 - name: Get UID of 'svc_user_name'
+  when: svc_user_uid == 'undefined'
   block:
     - name: Get 'svc_user_name' passwd entry
       ansible.builtin.getent:
@@ -9,9 +10,9 @@
     - name: Set svc_user_uid fact
       ansible.builtin.set_fact:
         svc_user_uid: "{{ getent_passwd[svc_user_name][1] }}"
-  when: svc_user_uid == 'undefined'
 
 - name: Get GID of 'svc_group_name'
+  when: svc_group_gid == 'undefined'
   block:
     - name: Get 'svc_group_name' group entry
       ansible.builtin.getent:
@@ -21,5 +22,4 @@
     - name: Set svc_group_gid fact
       ansible.builtin.set_fact:
         svc_group_gid: "{{ getent_group[svc_group_name][1] }}"
-  when: svc_group_gid == 'undefined'
 ...
