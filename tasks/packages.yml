@@ -10,5 +10,6 @@
 - name: Ensure wanted pip packages are present
   ansible.builtin.pip:
     name: "{{ svc_packages_pip }}"
+    virtualenv: /usr/local/bin/ansible-managed-venv
   when: svc_packages_pip | length > 0
 ...
