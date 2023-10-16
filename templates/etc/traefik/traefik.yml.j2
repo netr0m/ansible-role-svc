@@ -47,12 +47,17 @@ entryPoints:
     address: :53/udp
   dnsTls:
     address: :853
+  dlna:
+    address: :1900/udp
+  ssdp:
+    address: :7359/udp
 
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: {{ svc_traefik_exposed_by_default }}
     httpClientTimeout: 300
+    allowEmptyServices: true
   file:
     directory: /etc/traefik/config
 
