@@ -86,7 +86,7 @@
       traefik.http.routers.traefik-dash-rtr.entrypoints: webSecure
       traefik.http.routers.traefik-dash-rtr.service: api@internal
     networks:
-      - name: svc_net
+      - name: "{{ svc_docker_network_name }}"
       - name: bridge
 
 - name: Deploy traefik whoami service (debug)
@@ -106,5 +106,5 @@
     state: "{{ 'started' if svc_traefik_debug else 'absent' }}"
     recreate: "{{ 'true' if svc_traefik_debug else 'false' }}"
     networks:
-      - name: svc_net
+      - name: "{{ svc_docker_network_name }}"
 ...

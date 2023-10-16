@@ -1,4 +1,6 @@
 ---
+svc_docker_network_name: "svc_net"
+
 svc_traefik_middlewares_default:
   lan-mwr:
     ipWhiteList:
