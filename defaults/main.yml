@@ -45,6 +45,8 @@ svc_packages_pip:
 ### Services ###
 # Default restart policy
 svc_restart_policy: 'always'
+# Whether to force pull container images
+svc_force_pull: false
 # Default logging options - see https://docs.docker.com/config/containers/logging/configure/
 svc_log_driver: local
 svc_log_options:
@@ -75,34 +77,31 @@ svc_traefik_debug: false
 svc_traefik_insecure: false
 # Whether to expose Docker containers by default
 svc_traefik_exposed_by_default: false
-# Whether to automatically retrieve TLS certificates. Requires 'svc_traefik_dns_challenge_provider' and 'svc_traefik_env_vars_acme'.
+# Whether to automatically retrieve TLS certificates. Requires 'svc_traefik_dns_challenge_provider' and 'svc_traefik_acme_settings'.
 svc_traefik_automatic_https: true
 
-# When svc_traefik_automatic_https is true
+# Challenge provider to use for automatic TLS certificate acquisition. See https://doc.traefik.io/traefik/https/acme/#providers
 svc_traefik_dns_challenge_provider: 'cloudflare'
 # Whether to use the staging servers (recommended for testing)
 svc_traefik_letsencrypt_staging: false
 # Environment variables for Traefik to automatically acquire TLS certificates
-svc_traefik_env_vars_acme:
-  TRAEFIK_CERTIFICATESRESOLVERS_cloudflare_ACME_EMAIL: ''
-  CF_API_EMAIL: "{{ lookup('env', 'CF_API_EMAIL') | default('noone@domain.tld') }}"
+svc_traefik_acme_settings:
+  TRAEFIK_CERTIFICATESRESOLVERS_cloudflare_ACME_EMAIL: "{{ lookup('env', 'CF_API_EMAIL') | default('undefined') }}"
+  CF_API_EMAIL: "{{ lookup('env', 'CF_API_EMAIL') | default('undefined') }}"
   CF_API_KEY: "{{ lookup('env', 'CF_API_KEY') | default('undefined') }}"
-# Environment variables for the Traefik container
-svc_traefik_env_vars:
-  PUID: "{{ svc_user_uid }}"
-  PGID: "{{ svc_group_gid }}"
-  TZ: "{{ svc_tz | default('Etc/UTC') }}"
 
-# Traefik container settings
-svc_traefik_container:
-  hostname: traefik
-  image: traefik:latest
-  restart_policy: always
-  env_vars: "{{ svc_traefik_env_vars | combine(svc_traefik_env_vars_acme) }}"
-  ports:
-    http: 80
-    https: 443
-  memory: 1g
+# traefik container hostname
+svc_traefik_container_hostname: traefik
+# traefik version
+svc_traefik_version: latest
+# traefik container image
+svc_traefik_container_image: "traefik:{{ svc_traefik_version }}"
+# traefik container memory
+svc_traefik_container_memory: 1g
+# traefik container ports
+svc_traefik_container_ports:
+  http: 80
+  https: 443
 
 # Used as the 'average' parameter for the rate limiting middleware
 svc_traefik_middleware_rate_limit_average: 50
@@ -116,7 +115,6 @@ svc_traefik_extra_hosts: []
   #   protocol: https
   #   ip_addr: 10.10.10.10
   #   port: 8080
-
 # Extra middlewares for Traefik. See templates/etc/traefik/config/http.yml
 svc_traefik_middlewares: {}
   # example-mwr:
@@ -126,6 +124,7 @@ svc_traefik_middlewares: {}
   #       X-Forwarded-Proto: 'https'
 
 # Extra certificates for Traefik. See templates/etc/traefik/traefik.yml
+# First entry in the list will be used as the default, if any
 svc_traefik_certificates: []
   # - crt: /etc/traefik/tls/domain.tld.crt
   #   key: /etc/traefik/tls/domain.tld.key

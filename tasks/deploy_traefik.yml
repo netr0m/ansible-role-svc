@@ -62,10 +62,11 @@
 
 - name: Deploy traefik service
   community.docker.docker_container:
-    image: "{{ svc_traefik_container.image }}"
-    name: "{{ svc_traefik_container.hostname }}"
-    hostname: "{{ svc_traefik_container.hostname }}"
-    restart_policy: "{{ svc_traefik_container.restart_policy | default(svc_restart_policy) }}"
+    image: "{{ svc_traefik_container_image }}"
+    pull: "{{ svc_force_pull or svc_traefik_version == 'latest' }}"
+    name: "{{ svc_traefik_container_hostname }}"
+    hostname: "{{ svc_traefik_container_hostname }}"
+    restart_policy: "{{ svc_traefik_restart_policy | default(svc_restart_policy) }}"
     volumes:
       - "{{ svc_traefik_directories.cfg.path }}/traefik.yml:/etc/traefik/traefik.yml:ro"
       - "{{ svc_traefik_directories.cfg.path }}/config:/etc/traefik/config:ro"
@@ -73,16 +74,16 @@
       - "{{ svc_traefik_directories.log.path }}:/var/log/traefik:rw"
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "{{ svc_traefik_container.ports.http | default('80') }}:80"
-      - "{{ svc_traefik_container.ports.https | default('443') }}:443"
-    env: "{{ svc_traefik_container.env_vars }}"
-    memory: "{{ svc_traefik_container.memory | default('1g') }}"
+      - "{{ svc_traefik_container_ports.http | default('80') }}:80"
+      - "{{ svc_traefik_container_ports.https | default('443') }}:443"
+    env: "{{ svc_traefik_env_vars | combine(svc_traefik_acme_settings) }}"
+    memory: "{{ svc_traefik_container_memory | default('1g') }}"
     log_driver: "{{ svc_log_driver }}"
     log_options: "{{ svc_log_options }}"
     recreate: true
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.traefik-dash-rtr.rule: "Host(\"{{ svc_traefik_container.hostname }}.{{ svc_domain }}\")"
+      traefik.http.routers.traefik-dash-rtr.rule: "Host(\"{{ svc_traefik_container_hostname }}.{{ svc_domain }}\")"
       traefik.http.routers.traefik-dash-rtr.entrypoints: webSecure
       traefik.http.routers.traefik-dash-rtr.service: api@internal
     networks:
@@ -92,9 +93,10 @@
 - name: Deploy traefik whoami service (debug)
   community.docker.docker_container:
     image: traefik/whoami
+    pull: "{{ svc_force_pull or svc_traefik_version == 'latest' }}"
     name: whoami
     hostname: whoami
-    restart_policy: "{{ svc_traefik_container.restart_policy | default(svc_restart_policy) }}"
+    restart_policy: "{{ svc_traefik_restart_policy | default(svc_restart_policy) }}"
     labels:
       traefik.enable: 'true'
       traefik.http.routers.whoami-rtr.rule: "Host(\"whoami.{{ svc_domain }}\")"

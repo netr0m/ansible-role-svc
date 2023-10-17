@@ -24,6 +24,7 @@ entryPoints:
           to: webSecure
           scheme: https
           permanent: true
+
   webSecure:
     address: :443
     forwardedHeaders:
@@ -41,16 +42,10 @@ entryPoints:
             sans:
               - "*.{{ svc_domain }}"
 {% endif %}
-  dns:
-    address: :53
-  dnsUdp:
-    address: :53/udp
-  dnsTls:
-    address: :853
-  dlna:
-    address: :1900/udp
-  ssdp:
-    address: :7359/udp
+{% for entrypoint in svc_traefik_extra_entrypoints %} 
+  {{ entrypoint.name }}:
+    address: :{{ entrypoint.port }}
+{% endfor %}
 
 providers:
   docker:
@@ -69,7 +64,7 @@ certificatesResolvers:
   {{ svc_traefik_dns_challenge_provider }}:
     acme:
 {% if svc_traefik_letsencrypt_staging | bool %}
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      caServer: {{ svc_traefik_letsencrypt_staging_server }}
 {% endif %}
       storage: /etc/traefik/letsencrypt/acme.json
       dnsChallenge:
