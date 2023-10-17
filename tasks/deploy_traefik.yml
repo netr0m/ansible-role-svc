@@ -72,7 +72,6 @@
       - "{{ svc_traefik_directories.cfg.path }}/config:/etc/traefik/config:ro"
       - "{{ svc_traefik_directories.cfg.path }}/letsencrypt/acme.json:/etc/traefik/letsencrypt/acme.json:rw"
       - "{{ svc_traefik_directories.log.path }}:/var/log/traefik:rw"
-      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "{{ svc_traefik_container_ports.http | default('80') }}:80"
       - "{{ svc_traefik_container_ports.https | default('443') }}:443"
@@ -88,6 +87,7 @@
       traefik.http.routers.traefik-dash-rtr.service: api@internal
     networks:
       - name: "{{ svc_docker_network_name }}"
+      - name: "{{ svc_socketproxy_network_name }}"
       - name: bridge
 
 - name: Deploy traefik whoami service (debug)

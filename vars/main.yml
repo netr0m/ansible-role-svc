@@ -1,4 +1,5 @@
 ---
+# Name of the service docker network
 svc_docker_network_name: "svc_net"
 
 # Staging CA server for letsencrypt
@@ -28,4 +29,11 @@ svc_traefik_env_vars:
   PUID: "{{ svc_user_uid }}"
   PGID: "{{ svc_group_gid }}"
   TZ: "{{ svc_tz | default('Etc/UTC') }}"
+
+# Environment variables for the docker-socket-proxy container. Required by traefik
+svc_socketproxy_env_vars_baseline:
+  CONTAINERS: "1"
+
+# Name of the socketproxy docker network
+svc_socketproxy_network_name: "socket-proxy_net"
 ...

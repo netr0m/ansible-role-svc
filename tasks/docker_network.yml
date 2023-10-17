@@ -5,9 +5,16 @@
     state: present
     driver: macvlan
 
-- name: "Ensure docker bridge network is present ('{{ svc_docker_network_name }}')"
+- name: Ensure docker bridge network is present
   community.docker.docker_network:
     name: "{{ svc_docker_network_name }}"
     state: present
     driver: bridge
+
+- name: Ensure docker docker-socket-proxy network is present
+  community.docker.docker_network:
+    name: "{{ svc_socketproxy_network_name }}"
+    state: present
+    driver: bridge
+    internal: true
 ...
