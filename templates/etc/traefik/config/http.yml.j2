@@ -10,6 +10,10 @@ http:
       rule: Host(`{{ service.subdomain | default(service.shortname) }}.{{ svc_domain }}`)
       tls:
         certResolver: {{ svc_traefik_dns_challenge_provider }}
+        domains:
+          - main: {{ svc_domain }}
+            sans:
+              - "*.{{ svc_domain }}"
 
 {% endfor %}
   middlewares: {{ svc_traefik_middlewares_default | combine(svc_traefik_middlewares | default({})) | combine(svc_traefik_middlewares_extra | default({})) }}
