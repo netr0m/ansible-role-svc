@@ -1,8 +1,14 @@
-# Ansible Role: svc
+# Ansible Role: Service
 
 [![CI](https://github.com/netr0m/ansible-role-svc/workflows/CI/badge.svg?event=push)](https://github.com/netr0m/ansible-role-svc/actions?query=workflow%3ACI)
 
-Ansible role svc
+An Ansible role for shared configurations for service hosts. Handles common tasks for hosts used to deploy services, including configuring Traefik for reverse proxying (with [`docker-socket-proxy`](https://github.com/Tecnativa/docker-socket-proxy)), creating directories for configuration files and data, as well as defining some defaults for other containers deployed through e.g. [`netr0m.infra`](https://github.com/netr0m/ansible-role-infra).
+
+## Installation
+
+```sh
+$ ansible-galaxy install git+https://github.com/netr0m/ansible-role-svc.git
+```
 
 ## Requirements
 
@@ -12,12 +18,91 @@ None
 
 Available variables are listed in [`docs/default-variables.md`](./docs/default-variables.md) (see [`defaults/main.yml`](./defaults/main.yml))
 
+### Minimal configuration [required]
+
+Most of the defaults variables can be used as-is, but there are a few variables that must be set:
+
+```yml
+# Username of the user owning the files
+svc_user_name: 'service_username'
+# Group name of the group that should own the files
+svc_group_name: 'service_groupname'
+```
+
+### Recommended configuration changes
+
+```yml
+# Domain name
+svc_domain: mydomain.tld
+```
+
+#### Automated HTTPS certificate acquisition (with Cloudflare as an example)
+
+Uses the DNS challenge method, allowing internal (non-publicly accessible hosts) to acquire certificates. *All certificates are wildcard-certificates, to avoid exposing internal hostnames/services used.*
+
+```yml
+# Domain name
+svc_domain: mydomain.tld
+
+# Challenge provider to use for automatic TLS certificate acquisition. See https://doc.traefik.io/traefik/https/acme/#providers
+svc_traefik_dns_challenge_provider: 'cloudflare'
+
+# Environment variables for Traefik to automatically acquire TLS certificates
+svc_traefik_acme_settings:
+  # API token with DNS:Edit permission
+  CF_DNS_API_TOKEN: "{{ lookup('env', 'CF_DNS_API_TOKEN') | default('undefined') }}"
+```
+
+#### Extending Traefik
+
+##### Adding additional middlewares
+*See default middlewares in [vars/main.yml](vars/main.yml) under `svc_traefik_middlewares_default`.*
+
+See the [Traefik Docs on HTTP Middlewares](https://doc.traefik.io/traefik/middlewares/http/overview/#available-http-middlewares) for details.
+
+```yml
+svc_traefik_middlewares:
+  my-custom-mwr:
+    headers:
+      customRequestHeaders:
+        Authorization: ''
+        X-Forwarded-Proto: 'https'
+    addPrefix:
+      prefix: "/api"
+```
+
+##### Adding additional hosts without using Docker container labels (also applies to non-Docker hosts and services on remote hosts)
+```yml
+svc_traefik_extra_hosts:
+  - name: example01
+    shortname: ex01
+    middlewares: []
+    protocol: https
+    ip_addr: 10.10.10.10
+    port: 8080
+  - name: jellyfin
+    subdomain: media
+    shortname: jlf
+    middlewares:
+      - rate-limit-mwr
+      - lan-mwr
+      - my-custom-mwr
+    protocol: https
+    ip_addr: 10.10.10.11
+    port: 8081
+```
+
+The attribute '`shortname`' is used as the identifier for the Traefik `Router` and `Service` components (e.g. `jlf-rtr` and `jlf-svc`). If the attribute '`subdomain`' is absent, the '`shortname`' attribute will be used as the subdomain as well (e.g. `ex01.<svc_domain>`).
+
+##### Additional Traefik config YAML files
+
+You may also add any valid Traefik config file under `"{{ svc_traefik_directories.cfg.path }}"` (defaults to `/opt/svc/cfg/traefik/config`)
+
 ## Dependencies
 
-### Collections
 See [ansible-requirements.yml](./ansible-requirements.yml) for a list
 
-#### Installation
+### Installation
 ```sh
 ansible-galaxy collection install -r ansible-requirements.yml
 ```

@@ -47,8 +47,9 @@ svc_packages_pip:
 svc_restart_policy: 'always'
 # Whether to force pull container images
 svc_force_pull: false
-# Default logging options - see https://docs.docker.com/config/containers/logging/configure/
+# Default logging driver for Docker containers
 svc_log_driver: local
+# Default logging options - see https://docs.docker.com/config/containers/logging/configure/
 svc_log_options:
   max-size: 20m
   max-file: '5'
@@ -86,9 +87,7 @@ svc_traefik_dns_challenge_provider: 'cloudflare'
 svc_traefik_letsencrypt_staging: false
 # Environment variables for Traefik to automatically acquire TLS certificates
 svc_traefik_acme_settings:
-  TRAEFIK_CERTIFICATESRESOLVERS_cloudflare_ACME_EMAIL: "{{ lookup('env', 'CF_API_EMAIL') | default('undefined') }}"
-  CF_API_EMAIL: "{{ lookup('env', 'CF_API_EMAIL') | default('undefined') }}"
-  CF_API_KEY: "{{ lookup('env', 'CF_API_KEY') | default('undefined') }}"
+  CF_DNS_API_TOKEN: "{{ lookup('env', 'CF_DNS_API_TOKEN') | default('undefined') }}"
 
 # traefik container hostname
 svc_traefik_container_hostname: traefik
