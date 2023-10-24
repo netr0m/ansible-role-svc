@@ -43,6 +43,9 @@ jobs:
       - name: 'Install dependencies'
         run: pip3 install ansible molecule molecule-plugins[docker] docker
 
+      - name: 'List packages'
+        run: pip3 freeze
+
       - name: 'Run molecule tests'
         run: |
           cd ${{ inputs.dirname }}
