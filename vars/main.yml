@@ -6,7 +6,7 @@ svc_docker_network_name: "svc_net"
 svc_traefik_letsencrypt_staging_server: https://acme-staging-v02.api.letsencrypt.org/directory
 
 # Default middlewares for traefik
-svc_traefik_middlewares_default:
+svc_traefik_default_middlewares:
   lan-mwr:
     ipWhiteList:
       sourceRange:
