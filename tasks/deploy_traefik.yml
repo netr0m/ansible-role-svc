@@ -79,7 +79,7 @@
     memory: "{{ svc_traefik_container_memory | default('1g') }}"
     log_driver: "{{ svc_log_driver }}"
     log_options: "{{ svc_log_options }}"
-    recreate: true
+    recreate: "{{ true if (copy_traefik_config_result.changed or copy_traefik_http_config_result.changed) else false }}"
     labels:
       traefik.enable: 'true'
       traefik.http.routers.traefik-dash-rtr.rule: "Host(\"{{ svc_traefik_container_hostname }}.{{ svc_domain }}\")"

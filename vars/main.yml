@@ -6,7 +6,7 @@ svc_docker_network_name: "svc_net"
 svc_traefik_letsencrypt_staging_server: https://acme-staging-v02.api.letsencrypt.org/directory
 
 # Default middlewares for traefik
-svc_traefik_middlewares_default:
+svc_traefik_default_middlewares:
   lan-mwr:
     ipWhiteList:
       sourceRange:
@@ -26,9 +26,9 @@ svc_traefik_middlewares_default:
 
 # Environment variables for the Traefik container
 svc_traefik_env_vars:
-  PUID: "{{ svc_user_uid }}"
-  PGID: "{{ svc_group_gid }}"
-  TZ: "{{ svc_tz | default('Etc/UTC') }}"
+  PUID: "{{ svc_user_uid | string }}"
+  PGID: "{{ svc_group_gid | string }}"
+  TZ: "{{ svc_tz | default('Etc/UTC') | string }}"
 
 # Environment variables for the docker-socket-proxy container. Required by traefik
 svc_socketproxy_env_vars_baseline:

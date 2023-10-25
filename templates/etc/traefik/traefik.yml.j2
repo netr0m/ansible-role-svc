@@ -74,16 +74,16 @@ certificatesResolvers:
           - 1.1.1.1:53
           - 1.0.0.1:53
 {% endif %}
-{% if svc_traefik_certificates | length > 0 %}
+{% if svc_traefik_extra_certificates | length > 0 %}
 tls:
   stores:
     default:
       defaultCertificate:
-        certFile: {{ svc_traefik_certificates[0].crt }}
-        keyFile: {{ svc_traefik_certificates[0].key }}
-  {% if svc_traefik_certificates | length > 1 %}
+        certFile: {{ svc_traefik_extra_certificates[0].crt }}
+        keyFile: {{ svc_traefik_extra_certificates[0].key }}
+  {% if svc_traefik_extra_certificates | length > 1 %}
   certificates:
-  {% for certificate in svc_traefik_certificates %}
+  {% for certificate in svc_traefik_extra_certificates %}
     - certFile: {{ certificate.crt }}
       keyFile: {{ certificate.key }}
   {% endfor %}

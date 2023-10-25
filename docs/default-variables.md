@@ -222,21 +222,30 @@ svc_traefik_extra_hosts: []
   #   ip_addr: 10.10.10.10
   #   port: 8080
 ```
-### Extra middlewares for Traefik. See templates/etc/traefik/config/http.yml
+### Extra middlewares for Traefik. See templates/etc/traefik/config/http.yml.j2
 
 ```yaml
-svc_traefik_middlewares: {}
+svc_traefik_extra_middlewares: {}
   # example-mwr:
   #   headers:
   #     customRequestHeaders:
   #       Authorization: ''
   #       X-Forwarded-Proto: 'https'
 ```
-### Extra certificates for Traefik. See templates/etc/traefik/traefik.yml
+### Extra entrypoints for Traefik. See templates/etc/traefik/traefik.yml.j2
+
+```yaml
+svc_traefik_extra_entrypoints: []
+  # - name: dns
+  #   port: 53
+  # - name: dnsUdp
+  #   port: 53/udp
+```
+### Extra certificates for Traefik. See templates/etc/traefik/traefik.yml.j2
 First entry in the list will be used as the default, if any
 
 ```yaml
-svc_traefik_certificates: []
+svc_traefik_extra_certificates: []
   # - crt: /etc/traefik/tls/domain.tld.crt
   #   key: /etc/traefik/tls/domain.tld.key
 ```

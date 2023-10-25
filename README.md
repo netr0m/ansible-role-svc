@@ -56,12 +56,12 @@ svc_traefik_acme_settings:
 #### Extending Traefik
 
 ##### Adding additional middlewares
-*See default middlewares in [vars/main.yml](vars/main.yml) under `svc_traefik_middlewares_default`.*
+*See default middlewares in [vars/main.yml](vars/main.yml) under `svc_traefik_default_middlewares`.*
 
 See the [Traefik Docs on HTTP Middlewares](https://doc.traefik.io/traefik/middlewares/http/overview/#available-http-middlewares) for details.
 
 ```yml
-svc_traefik_middlewares:
+svc_traefik_extra_middlewares:
   my-custom-mwr:
     headers:
       customRequestHeaders:
@@ -69,6 +69,17 @@ svc_traefik_middlewares:
         X-Forwarded-Proto: 'https'
     addPrefix:
       prefix: "/api"
+```
+
+##### Adding additional entryPoints
+*See default entryPoints in [traefik.yml.j2](templates/etc/traefik/traefik.yml.j2)*
+
+```yml
+svc_traefik_extra_entrypoints:
+  - name: dns
+    port: 53
+  - name: dnsUdp
+    port: 53/udp
 ```
 
 ##### Adding additional hosts without using Docker container labels (also applies to non-Docker hosts and services on remote hosts)

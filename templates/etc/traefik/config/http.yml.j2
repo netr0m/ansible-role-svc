@@ -16,7 +16,7 @@ http:
               - "*.{{ svc_domain }}"
 
 {% endfor %}
-  middlewares: {{ svc_traefik_middlewares_default | combine(svc_traefik_middlewares | default({})) | combine(svc_traefik_middlewares_extra | default({})) }}
+  middlewares: {{ svc_traefik_default_middlewares | combine(svc_traefik_extra_middlewares | default({})) }}
 
   services:
   {% for service in svc_traefik_extra_hosts %}
