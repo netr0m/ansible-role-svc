@@ -1,6 +1,6 @@
 # Ansible Role: Service
 
-[![CI](https://github.com/netr0m/ansible-role-svc/workflows/CI/badge.svg?event=push)](https://github.com/netr0m/ansible-role-svc/actions?query=workflow%3ACI)
+[![CI](https://github.com/netr0m/ansible-role-svc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/netr0m/ansible-role-svc/actions/workflows/ci.yml)
 
 An Ansible role for shared configurations for service hosts. Handles common tasks for hosts used to deploy services, including configuring Traefik for reverse proxying (with [`docker-socket-proxy`](https://github.com/Tecnativa/docker-socket-proxy)), creating directories for configuration files and data, as well as defining some defaults for other containers deployed through e.g. [`netr0m.infra`](https://github.com/netr0m/ansible-role-infra).
 
