@@ -33,11 +33,33 @@ svc_subdirectories:
   data:
     path: "{{ svc_directory.path }}/data"
 
+### Access Control Lists ###
+# Define ACL definitions. See https://docs.ansible.com/ansible/latest/collections/ansible/posix/acl_module.html.
+# path and entity are required. etype defaults to 'user', 'permissions' default to 'r', 'state' defaults to 'present'
+svc_acl_entries: []
+  # - path: /opt/svc
+  #   entity: "myuser"
+  #   permissions: "r"
+  #   recursive: true
+  # - path: /opt/svc
+  #   entity: "myuser"
+  #   permissions: "rwx"
+  #   default: true
+  # - path: /opt/some_dir/myfile.ext
+  #   entity: "{{ svc_group_name }}"
+  #   etype: "group"
+  #   state: "absent"
+  # - path: /opt/some_dir/myfile.ext
+  #   entity: "myuser"
+
 ### Packages ###
 # Manage packages
 svc_manage_packages: true
+# Shared packages to install
+svc_packages_shared:
+  - acl
 # Packages to install. See vars/<ansible_os_family>.yml
-svc_packages: []
+svc_packages: "{{ svc_packages_shared }}"
 # Pip packages to install
 svc_packages_pip:
   - 'docker'
