@@ -1,4 +1,15 @@
 ---
+- name: Gather ACL entries
+  block:
+    - name: Find variables starting with '{{ __svc_acl_var_prefix }}'
+      ansible.builtin.set_fact:
+        __svc_acl_matches: "{{ lookup('ansible.builtin.varnames', '^{{ __svc_acl_var_prefix }}(_)?.*') | split(',') }}"
+
+    - name: Merge svc_acl entries
+      ansible.builtin.set_fact:
+        __svc_access_control_list: "{{ __svc_access_control_list + lookup('ansible.builtin.vars', item) }}"
+      with_items: "{{ __svc_acl_matches }}"
+
 - name: Set access control on files
   ansible.posix.acl:
     path: "{{ item.path }}"
