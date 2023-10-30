@@ -17,10 +17,6 @@
 - name: Include 'user_facts' tasks
   ansible.builtin.import_tasks: user_facts.yml
 
-# Gather variables
-- name: Include 'gather_vars' tasks
-  ansible.builtin.import_tasks: gather_vars.yml
-
 # Manage directories
 - name: Include 'directories' tasks
   ansible.builtin.import_tasks: directories.yml
