@@ -1,0 +1,12 @@
+---
+- name: Set access control on files
+  ansible.posix.acl:
+    path: "{{ item.path }}"
+    entity: "{{ item.entity }}"
+    etype: "{{ item.etype | default('user') }}"
+    state: "{{ item.state | default('present') }}"
+    permissions: "{{ item.permissions | default('r') }}"
+    recursive: "{{ item.recursive | default(omit) }}"
+    default: "{{ item.default | default(omit) }}"
+  with_items: "{{ __svc_access_control_list }}"
+...
