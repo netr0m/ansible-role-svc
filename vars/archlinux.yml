@@ -1,5 +1,5 @@
 ---
 ### Packages ###
 # Packages to install
-svc_packages: "{{ svc_packages_shared + ['python', 'python-pip', 'python-virtualenv'] }}"
+svc_packages: "{{ svc_packages_shared + ['python', 'python-pip', 'python-virtualenv', 'python-docker'] }}"
 ...
