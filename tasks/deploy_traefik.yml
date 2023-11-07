@@ -1,4 +1,15 @@
 ---
+- name: Gather Traefik middleware entries
+  block:
+    - name: Find variables starting with '{{ __svc_traefik_middleware_var_prefix }}'
+      ansible.builtin.set_fact:
+        __svc_traefik_mwr_matches: "{{ lookup('ansible.builtin.varnames', '^{{ __svc_traefik_middleware_var_prefix }}(_)?.*') | split(',') }}"
+
+    - name: Merge extra Traefik middleware entries
+      ansible.builtin.set_fact:
+        __svc_traefik_extra_middlewares: "{{ __svc_traefik_extra_middlewares | combine(lookup('ansible.builtin.vars', item)) }}"
+      with_items: "{{ __svc_traefik_mwr_matches }}"
+
 - name: Manage traefik config
   block:
     - name: Ensure traefik config directory is present

@@ -37,6 +37,11 @@ svc_socketproxy_env_vars_baseline:
 # Name of the socketproxy docker network
 svc_socketproxy_network_name: "socket-proxy_net"
 
+# Prefix for the extra Traefik middlewares
+__svc_traefik_middleware_var_prefix: "svc_traefik_extra_middlewares"
+# Placeholder for the combined extra traefik middleware entries
+__svc_traefik_extra_middlewares: {}
+
 # Prefix for the access control list entries variables to look up
 __svc_acl_var_prefix: "svc_acl_entries"
 # Placeholder for the combined access control list entries
