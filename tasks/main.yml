@@ -27,11 +27,6 @@
 - name: Include 'access_control' tasks
   ansible.builtin.import_tasks: set_access_control.yml
 
-# Manage docker-socket-proxy deployment
-- name: Include 'docker-socket-proxy' tasks
-  ansible.builtin.import_tasks: deploy_socketproxy.yml
-  when: svc_use_traefik
-
 # Manage traefik deployment
 - name: Include 'traefik' tasks
   ansible.builtin.import_tasks: deploy_traefik.yml
