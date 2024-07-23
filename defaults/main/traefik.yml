@@ -1,0 +1,103 @@
+---
+### Traefik ###
+# Version of the traefik Docker image to use (see 'svc_traefik_container_image')
+svc_traefik_version: latest
+
+## Traefik settings
+# Log level
+svc_traefik_log_level: 'INFO'
+# Whether to enable the Traefik dashboard
+svc_traefik_enable_dashboard: true
+# Whether to enable DEBUG mode
+svc_traefik_debug: false
+# Whether to allow insecure access
+svc_traefik_insecure: false
+# Whether to expose Docker containers by default
+svc_traefik_exposed_by_default: false
+# Whether to automatically retrieve TLS certificates. Requires 'svc_traefik_dns_challenge_provider' and 'svc_traefik_acme_settings'.
+svc_traefik_automatic_https: true
+# Whether to enable http => https redirection
+svc_traefik_http_redirect: true
+# Used as the 'average' parameter for the rate limiting middleware
+svc_traefik_middleware_rate_limit_average: 50
+# Used as the 'burst' parameter for the rate limiting middleware
+svc_traefik_middleware_rate_limit_burst: 100
+# Extra hosts for Traefik. See templates/etc/traefik/config/http.yml
+svc_traefik_extra_hosts: []
+  # - name: example
+  #   shortname: ex
+  #   middlewares: []
+  #   protocol: https
+  #   ip_addr: 10.10.10.10
+  #   port: 8080
+# Extra middlewares for Traefik. See templates/etc/traefik/config/http.yml.j2
+svc_traefik_extra_middlewares: {}
+  # example-mwr:
+  #   headers:
+  #     customRequestHeaders:
+  #       Authorization: ''
+  #       X-Forwarded-Proto: 'https'
+# Extra entrypoints for Traefik. See templates/etc/traefik/traefik.yml.j2
+svc_traefik_extra_entrypoints: []
+  # - name: dns
+  #   port: 53
+  # - name: dnsUdp
+  #   port: 53/udp
+# Extra certificates for Traefik. See templates/etc/traefik/traefik.yml.j2
+# First entry in the list will be used as the default, if any
+svc_traefik_extra_certificates: []
+  # - crt: /etc/traefik/tls/domain.tld.crt
+  #   key: /etc/traefik/tls/domain.tld.key
+
+# Challenge provider to use for automatic TLS certificate acquisition. See https://doc.traefik.io/traefik/https/acme/#providers
+svc_traefik_dns_challenge_provider: 'cloudflare'
+# Whether to use the staging servers (recommended for testing)
+svc_traefik_letsencrypt_staging: false
+# Environment variables for Traefik to automatically acquire TLS certificates
+svc_traefik_acme_settings:
+  CF_DNS_API_TOKEN: "{{ lookup('env', 'CF_DNS_API_TOKEN') | default('undefined') }}"
+
+## Directories
+# Directory path
+svc_traefik_directory_path: "{{ svc_directory_path }}/traefik"
+# Directory user ownership
+svc_traefik_directory_owner: "{{ svc_directory_owner }}"
+# Directory group ownership
+svc_traefik_directory_group: "{{ svc_directory_group }}"
+# Directory mode
+svc_traefik_directory_mode: "{{ svc_directory_mode }}"
+# traefik config directory path
+svc_traefik_config_directory_path: "{{ svc_traefik_directory_path }}/config"
+# traefik acme directory path
+svc_traefik_acme_directory_path: "{{ svc_traefik_directory_path }}/letsencrypt"
+
+## File paths
+# traefik compose file path
+svc_traefik_compose_path: "{{ svc_traefik_directory_path }}/compose.yml"
+# traefik env file path
+svc_traefik_env_file_path: "{{ svc_traefik_directory_path }}/traefik.env"
+# Permissions (mode) for the env files (as an octal)
+svc_traefik_env_file_mode: "0600"
+# traefik config file path
+svc_traefik_config_path: "{{ svc_traefik_directory_path }}/traefik.yml"
+# traefik acme.json file path
+svc_traefik_acme_path: "{{ svc_traefik_acme_directory_path }}/acme.json"
+
+# Docker service configs
+# Name of the traefik Docker service
+svc_traefik_service_name: traefik
+# Container image to use for the traefik service
+svc_traefik_container_image: "docker.io/traefik:{{ svc_traefik_version }}"
+# Hostname of the traefik Docker container
+svc_traefik_container_hostname: "{{ svc_traefik_service_name }}"
+# FQDN of the traefik Docker container
+svc_traefik_fqdn: "{{ svc_traefik_container_hostname }}.{{ svc_domain }}"
+# Restart policy for the traefik Docker container
+svc_traefik_restart_policy: "{{ svc_restart_policy }}"
+# Memory limit for the traefik container
+svc_traefik_container_memory: 1g
+# Port (on the host) to use for HTTP
+svc_traefik_port_http: 80
+# Port (on the host) to use for HTTPS
+svc_traefik_port_https: 443
+...

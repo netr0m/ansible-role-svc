@@ -1,0 +1,5 @@
+---
+# Environment variables for the docker-socket-proxy container. Required by traefik
+svc_socketproxy_env_vars_baseline:
+  CONTAINERS: "1"
+...

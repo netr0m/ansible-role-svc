@@ -1,0 +1,51 @@
+---
+### Docker Socket Proxy ###
+# Version of the socket-proxy Docker image to use (see 'svc_socketproxy_container_image')
+svc_socketproxy_version: 0.1.1
+
+# Settings for the docker socket proxy. See https://github.com/Tecnativa/docker-socket-proxy#grant-or-revoke-access-to-certain-api-sections
+svc_socketproxy_settings:
+  LOG_LEVEL: "info"
+  EVENTS: "1"
+  PING: "1"
+  VERSION: "1"
+  CONTAINERS: "1"
+  IMAGES: "0"
+  NETWORKS: "0"
+  VOLUMES: "0"
+  POST: "0"
+  SERVICES: "0"
+  INFO: "0"
+  TASKS: "0"
+  AUTH: "0"
+  SECRETS: "0"
+  BUILD: "0"
+  COMMIT: "0"
+  CONFIGS: "0"
+  DISTRIBUTION: "0"
+  EXEC: "0"
+  GRPC: "0"
+  NODES: "0"
+  PLUGINS: "0"
+  SESSION: "0"
+  SWARM: "0"
+  SYSTEM: "0"
+
+## File paths
+# socket-proxy env file path
+svc_socketproxy_env_file_path: "{{ svc_traefik_directory_path }}/socketproxy.env"
+# Permissions (mode) for the env files (as an octal)
+svc_socketproxy_env_file_mode: "0600"
+
+# Docker service configs
+# Name of the socket-proxy Docker service
+svc_socketproxy_service_name: socket-proxy
+# Container image to use for the socket-proxy service
+svc_socketproxy_container_image: "ghcr.io/tecnativa/docker-socket-proxy:{{ svc_socketproxy_version }}"
+# Hostname of the socket-proxy Docker container
+svc_socketproxy_container_hostname: "{{ svc_socketproxy_service_name }}"
+# Restart policy for the socket-proxy Docker container
+svc_socketproxy_restart_policy: "{{ svc_restart_policy }}"
+# Memory limit for the socket-proxy container
+svc_socketproxy_container_memory: 1g
+...

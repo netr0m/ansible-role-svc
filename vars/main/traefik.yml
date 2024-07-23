@@ -1,0 +1,37 @@
+---
+# Environment variables for the Traefik container
+svc_traefik_env_vars:
+  PUID: "{{ svc_user_uid | string }}"
+  PGID: "{{ svc_group_gid | string }}"
+  TZ: "{{ svc_tz | default('Etc/UTC') | string }}"
+
+# Staging CA server for letsencrypt
+svc_traefik_letsencrypt_staging_server: https://acme-staging-v02.api.letsencrypt.org/directory
+
+# Default middlewares for traefik
+svc_traefik_default_middlewares:
+  lan-mwr:
+    ipAllowList:
+      sourceRange:
+        - "127.0.0.1/32"
+        - "10.0.0.0/8"
+        - "172.16.0.0/12"
+        - "192.168.0.0/16"
+  rate-limit-mwr:
+    rateLimit:
+      average: "{{ svc_traefik_middleware_rate_limit_average }}"
+      burst: "{{ svc_traefik_middleware_rate_limit_burst }}"
+      period: 1s
+  redirect-https-mwr:
+    redirectScheme:
+      scheme: https
+      permanent: true
+
+# Prefix for the extra Traefik middlewares
+__svc_traefik_middleware_var_prefix: "svc_traefik_extra_middlewares"
+# Placeholder for the combined extra traefik middleware entries
+__svc_traefik_extra_middlewares: {}
+
+# ACME file permissions
+svc_traefik_acme_file_mode: "0600"
+...
