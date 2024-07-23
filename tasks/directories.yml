@@ -1,18 +1,9 @@
 ---
 - name: Ensure svc_directory is present
   ansible.builtin.file:
-    path: "{{ svc_directory.path }}"
+    path: "{{ svc_directory_path }}"
     state: directory
-    owner: "{{ svc_directory.owner }}"
-    group: "{{ svc_directory.group }}"
-    mode: "{{ svc_directory.mode }}"
-
-- name: Ensure svc_directory subdirectories are present
-  ansible.builtin.file:
-    path: "{{ item.value.path }}"
-    state: directory
-    owner: "{{ item.value.owner | default(svc_directory.owner) }}"
-    group: "{{ item.value.group | default(svc_directory.group) }}"
-    mode: "{{ item.value.mode | default(svc_directory.mode) }}"
-  with_dict: "{{ svc_subdirectories }}"
+    owner: "{{ svc_directory_owner }}"
+    group: "{{ svc_directory_group }}"
+    mode: "{{ svc_directory_mode }}"
 ...

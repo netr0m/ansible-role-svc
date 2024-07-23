@@ -18,20 +18,12 @@ svc_tz: Etc/UTC
 # Manage directories
 svc_manage_directories: true
 # Directory to store service data
-svc_directory:
-  path: '/opt/svc'
-  # Default permissions
-  owner: "{{ svc_user_name }}"
-  group: "{{ svc_group_name }}"
-  mode: 740
-# Subdirectories
-svc_subdirectories:
-  cfg:
-    path: "{{ svc_directory.path }}/cfg"
-  log:
-    path: "{{ svc_directory.path }}/log"
-  data:
-    path: "{{ svc_directory.path }}/data"
+svc_directory_path: '/opt/netr0m.svc'
+# Default permissions
+svc_directory_owner: "{{ svc_user_name }}"
+svc_directory_group: "{{ svc_group_name }}"
+svc_directory_mode: "0740"
+
 
 ### Access Control Lists ###
 # Define ACL definitions. See https://docs.ansible.com/ansible/latest/collections/ansible/posix/acl_module.html.
