@@ -1,6 +1,12 @@
 ---
-# Name of the service docker network
-svc_docker_network_name: "svc_net"
+### Docker ###
+# Shared labels for the Docker volumes
+svc_docker_volume_shared_labels:
+  netr0m.ansible-role: svc
+# Name of the service Docker network (bridge)
+svc_docker_network_name: svc_net
+# Name of the service Docker network (host)
+svc_docker_host_network_name: svc_hostnet
 
 # Staging CA server for letsencrypt
 svc_traefik_letsencrypt_staging_server: https://acme-staging-v02.api.letsencrypt.org/directory

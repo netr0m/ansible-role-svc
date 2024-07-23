@@ -24,6 +24,22 @@ svc_directory_owner: "{{ svc_user_name }}"
 svc_directory_group: "{{ svc_group_name }}"
 svc_directory_mode: "0740"
 
+### Docker ###
+# Default restart policy
+svc_restart_policy: always
+# Max. wait time for compose deployment
+svc_compose_wait_timeout: 60
+# Default logging driver for Docker containers
+svc_log_driver: local
+# Default logging options - see https://docs.docker.com/config/containers/logging/configure/
+svc_log_options:
+  max-size: 20m
+  max-file: '5'
+  compress: 'true'
+
+### Services ###
+# Configure Traefik
+svc_use_traefik: true
 
 ### Access Control Lists ###
 # Define ACL definitions. See https://docs.ansible.com/ansible/latest/collections/ansible/posix/acl_module.html.
@@ -55,24 +71,6 @@ svc_packages: "{{ svc_packages_shared }}"
 # Pip packages to install
 svc_packages_pip:
   - 'docker'
-
-### Services ###
-# Default restart policy
-svc_restart_policy: 'always'
-# Whether to force pull container images
-svc_force_pull: false
-# Default logging driver for Docker containers
-svc_log_driver: local
-# Default logging options - see https://docs.docker.com/config/containers/logging/configure/
-svc_log_options:
-  max-size: 20m
-  max-file: '5'
-  compress: 'true'
-
-# Manage docker networks
-svc_manage_docker_networks: true
-# Configure Traefik
-svc_use_traefik: true
 
 ### Traefik ###
 # Directories for Traefik
