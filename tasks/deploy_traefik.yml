@@ -1,4 +1,12 @@
 ---
+- name: Ensure traefik directory is present
+  ansible.builtin.file:
+    path: "{{ svc_traefik_directory_path }}"
+    state: directory
+    owner: "{{ svc_traefik_directory_owner }}"
+    group: "{{ svc_traefik_directory_group }}"
+    mode: "{{ svc_traefik_directory_mode }}"
+
 - name: Gather Traefik middleware entries
   block:
     - name: Find variables starting with '{{ __svc_traefik_middleware_var_prefix }}'
@@ -10,114 +18,117 @@
         __svc_traefik_extra_middlewares: "{{ __svc_traefik_extra_middlewares | combine(lookup('ansible.builtin.vars', item)) }}"
       with_items: "{{ __svc_traefik_mwr_matches }}"
 
-- name: Manage traefik config
+- name: Manage traefik configuration
   block:
-    - name: Ensure traefik config directory is present
+    - name: Ensure traefik config subdirectory is present
       ansible.builtin.file:
-        path: "{{ svc_traefik_directories.cfg.path }}"
+        path: "{{ svc_traefik_config_directory_path }}"
         state: directory
-        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
-        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
-        mode: "{{ svc_traefik_directories.cfg.mode | default(svc_subdirectories.cfg.mode) | default(svc_directory.mode) }}"
+        owner: "{{ svc_traefik_directory_owner }}"
+        group: "{{ svc_traefik_directory_group }}"
+        mode: "{{ svc_traefik_directory_mode }}"
 
-    - name: Ensure traefik configs subdirectory is present
-      ansible.builtin.file:
-        path: "{{ svc_traefik_directories.cfg.path }}/config"
-        state: directory
-        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
-        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
-        mode: "{{ svc_traefik_directories.cfg.mode | default(svc_subdirectories.cfg.mode) | default(svc_directory.mode) }}"
-
-    - name: Copy traefik config into place
+    - name: Write traefik config to file
       ansible.builtin.template:
         src: etc/traefik/traefik.yml.j2
-        dest: "{{ svc_traefik_directories.cfg.path }}/traefik.yml"
-        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
-        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
-        mode: "{{ svc_traefik_directories.cfg.mode | default(svc_subdirectories.cfg.mode) | default(svc_directory.mode) }}"
+        dest: "{{ svc_traefik_config_path }}"
+        owner: "{{ svc_traefik_directory_owner }}"
+        group: "{{ svc_traefik_directory_group }}"
+        mode: "{{ svc_traefik_directory_mode }}"
         backup: true
-      register: copy_traefik_config_result
+      register: traefik_config_file_output
 
-    - name: Copy traefik http config into place
+    - name: Write traefik http config to file
       ansible.builtin.template:
         src: etc/traefik/config/http.yml.j2
-        dest: "{{ svc_traefik_directories.cfg.path }}/config/http.yml"
-        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
-        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
-        mode: "{{ svc_traefik_directories.cfg.mode | default(svc_subdirectories.cfg.mode) | default(svc_directory.mode) }}"
+        dest: "{{ svc_traefik_config_directory_path }}/http.yml"
+        owner: "{{ svc_traefik_directory_owner }}"
+        group: "{{ svc_traefik_directory_group }}"
+        mode: "{{ svc_traefik_directory_mode }}"
         backup: true
-      register: copy_traefik_http_config_result
+      register: traefik_http_config_file_output
 
-- name: Manage traefik certificates directory
+    - name: Manage traefik ACME config
+      block:
+        - name: Ensure traefik ACME subdirectory is present
+          ansible.builtin.file:
+            path: "{{ svc_traefik_acme_directory_path }}"
+            state: directory
+            owner: "{{ svc_traefik_directory_owner }}"
+            group: "{{ svc_traefik_directory_group }}"
+            mode: "{{ svc_traefik_acme_file_mode }}"
+
+        - name: Check for presence of traefik ACME file
+          ansible.builtin.stat:
+            path: "{{ svc_traefik_acme_path }}"
+          register: traefik_acme_file_stat_output
+
+        - name: Ensure proper traefik ACME file permissions
+          ansible.builtin.file:
+            path: "{{ svc_traefik_acme_path }}"
+            state: "{{ 'file' if traefik_acme_file_stat_output.stat.exists else 'touch' }}"
+            owner: "{{ svc_traefik_directory_owner }}"
+            group: "{{ svc_traefik_directory_group }}"
+            mode: "{{ svc_traefik_acme_file_mode }}"
+
+- name: Manage service files
   block:
-    - name: Ensure traefik letsencrypt directory is present
-      ansible.builtin.file:
-        path: "{{ svc_traefik_directories.cfg.path }}/letsencrypt"
-        state: directory
-        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
-        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
-        mode: 0600
+    - name: Write traefik environment variables to file
+      ansible.builtin.template:
+        src: template.env.j2
+        dest: "{{ svc_traefik_env_file_path }}"
+        owner: "{{ svc_traefik_directory_owner }}"
+        group: "{{ svc_traefik_directory_group }}"
+        mode: "{{ svc_traefik_env_file_mode }}"
+        backup: true
+      vars:
+        _env_vars: "{{ svc_traefik_env_vars | combine(svc_traefik_acme_settings) }}"
+      register: traefik_env_file_output
 
-    - name: Check for presence of traefik ACME file
-      ansible.builtin.stat:
-        path: "{{ svc_traefik_directories.cfg.path }}/letsencrypt/acme.json"
-      register: __acme_file_result
+    - name: Write socket-proxy environment variables to file
+      ansible.builtin.template:
+        src: template.env.j2
+        dest: "{{ svc_socketproxy_env_file_path }}"
+        owner: "{{ svc_traefik_directory_owner }}"
+        group: "{{ svc_traefik_directory_group }}"
+        mode: "{{ svc_socketproxy_env_file_mode }}"
+        backup: true
+      vars:
+        _env_vars: "{{ svc_socketproxy_settings | combine(svc_socketproxy_env_vars_baseline) }}"
+      register: socketproxy_env_file_output
 
-    - name: Ensure traefik ACME file permissions
-      ansible.builtin.file:
-        path: "{{ svc_traefik_directories.cfg.path }}/letsencrypt/acme.json"
-        state: "{{ 'file' if __acme_file_result.stat.exists else 'touch' }}"
-        owner: "{{ svc_traefik_directories.cfg.owner | default(svc_subdirectories.cfg.owner) | default(svc_directory.owner) }}"
-        group: "{{ svc_traefik_directories.cfg.group | default(svc_subdirectories.cfg.group) | default(svc_directory.group) }}"
-        mode: 0600
+    - name: Copy compose services file into place
+      ansible.builtin.template:
+        src: compose/traefik.yml.j2
+        dest: "{{ svc_traefik_compose_path }}"
+        owner: "{{ svc_traefik_directory_owner }}"
+        group: "{{ svc_traefik_directory_group }}"
+        mode: "{{ svc_traefik_directory_mode }}"
+        backup: true
+        validate: docker compose -f %s config -q
+      register: compose_file_output
 
-- name: Deploy traefik service
-  community.docker.docker_container:
-    image: "{{ svc_traefik_container_image }}"
-    pull: "{{ svc_force_pull or svc_traefik_version == 'latest' }}"
-    name: "{{ svc_traefik_container_hostname }}"
-    hostname: "{{ svc_traefik_container_hostname }}"
-    restart_policy: "{{ svc_traefik_restart_policy | default(svc_restart_policy) }}"
-    volumes:
-      - "{{ svc_traefik_directories.cfg.path }}/traefik.yml:/etc/traefik/traefik.yml:ro"
-      - "{{ svc_traefik_directories.cfg.path }}/config:/etc/traefik/config:ro"
-      - "{{ svc_traefik_directories.cfg.path }}/letsencrypt/acme.json:/etc/traefik/letsencrypt/acme.json:rw"
-      - "{{ svc_traefik_directories.log.path }}:/var/log/traefik:rw"
-    ports:
-      - "{{ svc_traefik_container_ports.http | default('80') }}:80"
-      - "{{ svc_traefik_container_ports.https | default('443') }}:443"
-    env: "{{ svc_traefik_env_vars | combine(svc_traefik_acme_settings) }}"
-    memory: "{{ svc_traefik_container_memory | default('1g') }}"
-    log_driver: "{{ svc_log_driver }}"
-    log_options: "{{ svc_log_options }}"
-    recreate: "{{ true if (copy_traefik_config_result.changed or copy_traefik_http_config_result.changed) else false }}"
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.traefik-dash-rtr.rule: "Host(\"{{ svc_traefik_container_hostname }}.{{ svc_domain }}\")"
-      traefik.http.routers.traefik-dash-rtr.entrypoints: webSecure
-      traefik.http.routers.traefik-dash-rtr.service: api@internal
-    networks:
-      - name: "{{ svc_docker_network_name }}"
-      - name: "{{ svc_socketproxy_network_name }}"
-      - name: bridge
+- name: Take down services due to changed compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ svc_traefik_directory_path }}"
+    files: "{{ compose_file_output.backup_file }}"
+    state: absent
+    remove_orphans: true
+  when: compose_file_output.backup_file is defined
 
-- name: Deploy traefik whoami service (debug)
-  community.docker.docker_container:
-    image: traefik/whoami
-    pull: "{{ svc_force_pull or svc_traefik_version == 'latest' }}"
-    name: whoami
-    hostname: whoami
-    restart_policy: "{{ svc_traefik_restart_policy | default(svc_restart_policy) }}"
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.whoami-rtr.rule: "Host(\"whoami.{{ svc_domain }}\")"
-      traefik.http.routers.whoami-rtr.entrypoints: webSecure
-    log_driver: "{{ svc_log_driver }}"
-    log_options: "{{ svc_log_options }}"
-    security_opts:
-      - no-new-privileges:true
-    state: "{{ 'started' if svc_traefik_debug else 'absent' }}"
-    recreate: "{{ 'true' if svc_traefik_debug else 'false' }}"
-    networks:
-      - name: "{{ svc_docker_network_name }}"
+- name: Pull container images
+  community.docker.docker_image:
+    name: "{{ item }}"
+    source: pull
+  with_items:
+    - "{{ svc_socketproxy_container_image }}"
+    - "{{ svc_traefik_container_image }}"
+
+- name: Deploy traefik services
+  community.docker.docker_compose_v2:
+    project_src: "{{ svc_traefik_directory_path }}"
+    state: "{{ 'present' if svc_use_traefik else 'absent' }}"
+    wait: true
+    wait_timeout: "{{ svc_compose_wait_timeout }}"
+  register: deploy_traefik_services_output
 ...
