@@ -1,18 +1,18 @@
 ---
-# Domain name
-svc_domain: local
 # Environment
 svc_env: "{{ lookup('env', 'ENVIRONMENT') | default('production') }}"
 # Username of the user owning the files
-svc_user_name: 'butler'
+svc_user_name: butler
 # Group name of the group that should own the files
-svc_group_name: 'butlers'
+svc_group_name: butlers
 # Optionally provide the UID of the user. If absent, the UID will be looked up
 svc_user_uid: undefined
 # Optionally provide the GID of the group. If absent, the GID will be looked up
 svc_group_gid: undefined
 # Timezone
 svc_tz: Etc/UTC
+# Domain name
+svc_domain: local
 
 ### Directories ###
 # Manage directories
