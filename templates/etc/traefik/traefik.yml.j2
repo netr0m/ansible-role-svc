@@ -18,12 +18,14 @@ accessLog:
 entryPoints:
   web:
     address: :80
+{% if svc_traefik_http_redirect %}
     http:
       redirections:
         entryPoint:
           to: webSecure
           scheme: https
           permanent: true
+{% endif %}
 
   webSecure:
     address: :443
@@ -33,7 +35,7 @@ entryPoints:
         - "10.0.0.0/8"
         - "192.168.0.0/16"
         - "172.16.0.0/12"
-{% if svc_domain != 'local' %}
+{% if svc_domain != 'local' and svc_traefik_automatic_https %}
     http:
       tls:
         certResolver: {{ svc_traefik_dns_challenge_provider }}
@@ -59,11 +61,11 @@ providers:
 serversTransport:
   insecureSkipVerify: true
 
-{% if svc_traefik_automatic_https | bool %}
+{% if svc_traefik_automatic_https %}
 certificatesResolvers:
   {{ svc_traefik_dns_challenge_provider }}:
     acme:
-{% if svc_traefik_letsencrypt_staging | bool %}
+{% if svc_traefik_letsencrypt_staging %}
       caServer: {{ svc_traefik_letsencrypt_staging_server }}
 {% endif %}
       storage: /etc/traefik/letsencrypt/acme.json

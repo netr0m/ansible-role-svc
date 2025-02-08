@@ -1,0 +1,76 @@
+# {{ ansible_managed }}
+services:
+  {{ svc_socketproxy_service_name }}:
+    image: {{ svc_socketproxy_container_image }}
+    container_name: {{ svc_socketproxy_container_hostname }}
+    restart: {{ svc_socketproxy_restart_policy | default(svc_restart_policy) }}
+    logging:
+      driver: {{ svc_log_driver }}
+      options: {{ svc_log_options }}
+    env_file: {{ svc_socketproxy_env_file_path }}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    mem_limit: {{ svc_socketproxy_container_memory }}
+    labels:
+      com.centurylinklabs.watchtower.enable: 'false'
+    networks:
+      - socketproxy_net
+
+  {{ svc_traefik_service_name }}:
+    image: {{ svc_traefik_container_image }}
+    container_name: {{ svc_traefik_container_hostname }}
+    restart: {{ svc_traefik_restart_policy | default(svc_restart_policy) }}
+    logging:
+      driver: {{ svc_log_driver }}
+      options: {{ svc_log_options }}
+    env_file: {{ svc_traefik_env_file_path }}
+    volumes:
+      - {{ svc_traefik_config_path }}:/etc/traefik/traefik.yml:ro
+      - {{ svc_traefik_config_directory_path }}:/etc/traefik/config:ro
+      - {{ svc_traefik_acme_path }}:/etc/traefik/letsencrypt/acme.json:rw
+      - {{ svc_traefik_directory_path }}/logs:/var/log/traefik:rw
+    mem_limit: {{ svc_traefik_container_memory }}
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.{{ svc_traefik_service_name }}-rtr.rule: "Host(\"{{ svc_traefik_fqdn }}\")"
+      traefik.http.routers.{{ svc_traefik_service_name }}-rtr.entrypoints: webSecure
+      traefik.http.routers.{{ svc_traefik_service_name }}-rtr.service: api@internal
+      traefik.http.routers.{{ svc_traefik_service_name }}-rtr.middlewares: lan-mwr@file
+    networks:
+      - socketproxy_net
+      - {{ svc_docker_network_name }}
+    ports:
+      - {{ svc_traefik_port_http }}:80
+      - {{ svc_traefik_port_https }}:443
+    depends_on:
+      - {{ svc_socketproxy_service_name }}
+
+{% if svc_traefik_debug %}
+  whoami:
+    image: traefik/whoami
+    container_name: whoami
+    restart: {{ svc_traefik_restart_policy | default(svc_restart_policy) }}
+    logging:
+      driver: {{ svc_log_driver }}
+      options: {{ svc_log_options }}
+    mem_limit: {{ svc_traefik_container_memory }}
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.whoami-rtr.rule: "Host(\"whoami.{{ svc_domain }}\")"
+      traefik.http.routers.whoami-rtr.entrypoints: webSecure
+    networks:
+      - {{ svc_docker_network_name }}
+    depends_on:
+      - {{ svc_traefik_service_name }}
+    security_opt:
+      - no-new-privileges:true
+{% endif %}
+
+networks:
+  socketproxy_net:
+    driver: bridge
+    internal: true
+  {{ svc_docker_network_name }}:
+    driver: bridge
+  {{ svc_docker_host_network_name }}:
+    driver: macvlan

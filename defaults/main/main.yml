@@ -1,0 +1,74 @@
+---
+# Environment
+svc_env: "{{ lookup('env', 'ENVIRONMENT') | default('production') }}"
+# Username of the user owning the files
+svc_user_name: butler
+# Group name of the group that should own the files
+svc_group_name: butlers
+# Optionally provide the UID of the user. If absent, the UID will be looked up
+svc_user_uid: undefined
+# Optionally provide the GID of the group. If absent, the GID will be looked up
+svc_group_gid: undefined
+# Timezone
+svc_tz: Etc/UTC
+# Domain name
+svc_domain: local
+
+### Directories ###
+# Manage directories
+svc_manage_directories: true
+# Directory to store service data
+svc_directory_path: '/opt/netr0m.svc'
+# Default permissions
+svc_directory_owner: "{{ svc_user_name }}"
+svc_directory_group: "{{ svc_group_name }}"
+svc_directory_mode: "0740"
+
+### Docker ###
+# Default restart policy
+svc_restart_policy: always
+# Max. wait time for compose deployment
+svc_compose_wait_timeout: 60
+# Default logging driver for Docker containers
+svc_log_driver: local
+# Default logging options - see https://docs.docker.com/config/containers/logging/configure/
+svc_log_options:
+  max-size: 20m
+  max-file: '5'
+  compress: 'true'
+
+### Services ###
+# Configure Traefik
+svc_use_traefik: true
+
+### Access Control Lists ###
+# Define ACL definitions. See https://docs.ansible.com/ansible/latest/collections/ansible/posix/acl_module.html.
+# path and entity are required. etype defaults to 'user', 'permissions' default to 'r', 'state' defaults to 'present'
+svc_acl_entries: []
+  # - path: /opt/svc
+  #   entity: "myuser"
+  #   permissions: "r"
+  #   recursive: true
+  # - path: /opt/svc
+  #   entity: "myuser"
+  #   permissions: "rwx"
+  #   default: true
+  # - path: /opt/some_dir/myfile.ext
+  #   entity: "{{ svc_group_name }}"
+  #   etype: "group"
+  #   state: "absent"
+  # - path: /opt/some_dir/myfile.ext
+  #   entity: "myuser"
+
+### Packages ###
+# Manage packages
+svc_manage_packages: true
+# Shared packages to install
+svc_packages_shared:
+  - acl
+# Packages to install. See vars/<ansible_os_family>.yml
+svc_packages: "{{ svc_packages_shared }}"
+# Pip packages to install
+svc_packages_pip:
+  - 'docker'
+...

@@ -1,8 +1,4 @@
 ---
-- name: Load default vars
-  ansible.builtin.include_vars:
-    file: main.yml
-
 - name: Load OS-specific vars
   ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
@@ -30,16 +26,6 @@
 # Manage access control
 - name: Include 'access_control' tasks
   ansible.builtin.import_tasks: set_access_control.yml
-
-# Manage docker networks
-- name: Include 'docker_network' tasks
-  ansible.builtin.import_tasks: docker_network.yml
-  when: svc_manage_docker_networks
-
-# Manage docker-socket-proxy deployment
-- name: Include 'docker-socket-proxy' tasks
-  ansible.builtin.import_tasks: deploy_socketproxy.yml
-  when: svc_use_traefik
 
 # Manage traefik deployment
 - name: Include 'traefik' tasks
