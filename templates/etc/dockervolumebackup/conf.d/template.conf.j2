@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+# See https://offen.github.io/docker-volume-backup/reference/
+
+## {{ _svc_backup_service_name }}-{{ _svc_backup_service_alias }}
+
+BACKUP_SOURCES="{{ ['/backup/'] | product(_docker_volume_backup_volumes) | map('join') | list | join(',') }}"
+{% for key, val in _docker_volume_backup_config.items() %}
+{% if val != "" %}
+{{ key }}="{{ val }}"
+{% endif %}
+{% endfor %}

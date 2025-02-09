@@ -1,0 +1,39 @@
+# {{ ansible_managed }}
+services:
+  {{ svc_docker_volume_backup_service_name }}:
+    image: {{ svc_docker_volume_backup_container_image }}
+    container_name: {{ svc_docker_volume_backup_container_hostname }}
+    hostname: {{ svc_docker_volume_backup_container_hostname }}
+    restart: {{ svc_docker_volume_backup_restart_policy | default(svc_restart_policy) }}
+    logging:
+      driver: {{ svc_log_driver }}
+      options: {{ svc_log_options }}
+    env_file: {{ svc_docker_volume_backup_env_file_path }}
+    volumes:
+      - {{ svc_docker_volume_backup_confd_directory_path }}:/etc/dockervolumebackup/conf.d
+      - {{ svc_docker_volume_backup_archive_directory_path }}:{{ svc_docker_volume_backup_archive }}
+{% for vol in _svc_docker_volume_backup_volumes %}
+      - {{ vol }}:/backup/{{ vol }}:ro
+{% endfor %}
+    mem_limit: {{ svc_docker_volume_backup_container_memory }}
+    labels:
+      com.centurylinklabs.watchtower.enable: 'false'
+    networks:
+      - default
+      - {{ svc_docker_network_name }}
+      - {{ svc_docker_socket_proxy_network_name }}
+
+volumes:
+{% for vol in _svc_docker_volume_backup_volumes %}
+  {{ vol }}:
+    external: 'true'
+{% endfor %}
+
+networks:
+  default:
+    driver: bridge
+    internal: 'true'
+  {{ svc_docker_network_name }}:
+    external: 'true'
+  {{ svc_docker_socket_proxy_network_name }}:
+    external: 'true'

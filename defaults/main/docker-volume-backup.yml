@@ -1,0 +1,74 @@
+---
+### docker-volume-backup ###
+# Version of the docker-volume-backup Docker image to use (see 'svc_docker_volume_backup_container_image')
+svc_docker_volume_backup_version: v2.43.2
+
+## docker-volume-backup settings. See https://offen.github.io/docker-volume-backup/reference/
+svc_docker_volume_backup_settings: {}
+# default schedule (cron syntax) for backups (default: 05:05 every day)
+svc_docker_volume_backup_schedule: "5 5 * * *"
+# keep local copies of backups in this container path (BACKUP_ARCHIVE)
+svc_docker_volume_backup_archive: "/archive"
+# timeout for 'stop-services'
+svc_docker_volume_backup_stop_service_timeout: "5m"
+# days to keep backup files before rotating
+svc_docker_volume_backup_retention_days: 7
+
+# services to back up.
+## service: name of the service (used for the config file)
+## alias: an alias, in the event that there are multiple definitions for one service (e.g. daily, weekly)
+## config: overrides to the default config. See https://offen.github.io/docker-volume-backup/reference/
+## volumes: volumes to include in the backup
+## stop: containers to stop prior to backing up
+svc_docker_volume_backup_services: []
+  # - service: uptimekuma
+  # - service: vaultwarden
+  #   alias: daily
+  #   config:
+  #     BACKUP_CRON_SCHEDULE: "5 4 0 * *"
+  #     BACKUP_PREFIX: "backup-vaultwarden"
+  #   volumes: ["vaultwarden_data"]
+  #   stop: ["vaultwarden"]
+  # - service: pihole
+  #   config:
+  #     BACKUP_CRON_SCHEDULE: "5 4 0 * *"
+  #     BACKUP_PREFIX: "backup-pihole"
+  #   volumes: ["pihole_data"]
+  #   stop: ["pihole", "unbound"]
+
+## Directories
+# Directory path
+svc_docker_volume_backup_directory_path: "{{ svc_directory_path }}/docker-volume-backup"
+# Directory user ownership
+svc_docker_volume_backup_directory_owner: "{{ svc_directory_owner }}"
+# Directory group ownership
+svc_docker_volume_backup_directory_group: "{{ svc_directory_group }}"
+# Directory mode
+svc_docker_volume_backup_directory_mode: "{{ svc_directory_mode }}"
+# docker-volume-backup conf.d directory path
+svc_docker_volume_backup_confd_directory_path: "{{ svc_docker_volume_backup_directory_path }}/conf.d"
+# where to store backup files on the host
+svc_docker_volume_backup_archive_directory_path: "{{ svc_docker_volume_backup_directory_path }}/archive"
+
+## File paths
+# File mode
+svc_docker_volume_backup_file_mode: "{{ svc_file_mode }}"
+# docker-volume-backup compose file path
+svc_docker_volume_backup_compose_path: "{{ svc_docker_volume_backup_directory_path }}/compose.yml"
+# docker-volume-backup env file path
+svc_docker_volume_backup_env_file_path: "{{ svc_docker_volume_backup_directory_path }}/docker-volume-backup.env"
+# Permissions (mode) for the env files (as an octal)
+svc_docker_volume_backup_env_file_mode: "0600"
+
+## Docker service configs
+# Name of the docker-volume-backup Docker service
+svc_docker_volume_backup_service_name: docker-volume-backup
+# Container image to use for the docker-volume-backup service
+svc_docker_volume_backup_container_image: "ghcr.io/offen/docker-volume-backup:{{ svc_docker_volume_backup_version }}"
+# Hostname of the docker-volume-backup Docker container
+svc_docker_volume_backup_container_hostname: "{{ svc_docker_volume_backup_service_name }}"
+# Restart policy for the docker-volume-backup Docker containers
+svc_docker_volume_backup_restart_policy: "{{ svc_restart_policy }}"
+# Memory limit for the docker-volume-backup container
+svc_docker_volume_backup_container_memory: 4g
+...

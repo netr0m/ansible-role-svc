@@ -32,4 +32,9 @@
   ansible.builtin.import_tasks: deploy_traefik.yml
   when: svc_use_traefik
 
+# Manage docker-volume-backup deployment
+- name: Include 'docker-volume-backup' tasks
+  ansible.builtin.import_tasks: deploy_docker-volume-backup.yml
+  when: svc_use_docker_volume_backup
+
 ...
