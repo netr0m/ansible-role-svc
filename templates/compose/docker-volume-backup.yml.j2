@@ -22,12 +22,13 @@ services:
       - default
       - {{ svc_docker_network_name }}
       - {{ svc_docker_socket_proxy_network_name }}
-
+{% if _svc_docker_volume_backup_volumes | length > 0 %}
 volumes:
 {% for vol in _svc_docker_volume_backup_volumes %}
   {{ vol }}:
     external: 'true'
 {% endfor %}
+{% endif %}
 
 networks:
   default:

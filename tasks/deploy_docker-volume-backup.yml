@@ -70,7 +70,7 @@
 
 - name: Manage service files
   block:
-    - name: Write docker_volume_backup environment variables to file
+    - name: Write docker-volume-backup environment variables to file
       ansible.builtin.template:
         src: template.env.j2
         dest: "{{ svc_docker_volume_backup_env_file_path }}"
