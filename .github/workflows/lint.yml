@@ -41,6 +41,7 @@ jobs:
 
       - name: 'Install ansible dependencies'
         run: |
+          cd ${{ inputs.dirname }}
           ansible-galaxy collection install -r ansible-requirements.yml
           ansible-galaxy role install -r ansible-requirements.yml
 
