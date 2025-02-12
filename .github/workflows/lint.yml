@@ -39,6 +39,11 @@ jobs:
       - name: 'Install dependencies'
         run: pip3 install ${{ matrix.linter }}
 
+      - name: 'Install ansible dependencies'
+        run: |
+          ansible-galaxy collection install -r ansible-requirements.yml
+          ansible-galaxy role install -r ansible-requirements.yml
+
       - name: 'Lint code'
         run: |
           cd ${{ inputs.dirname }}
