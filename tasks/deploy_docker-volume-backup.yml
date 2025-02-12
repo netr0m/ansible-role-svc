@@ -1,0 +1,118 @@
+---
+- name: Ensure docker-volume-backup directory is present
+  ansible.builtin.file:
+    path: "{{ svc_docker_volume_backup_directory_path }}"
+    state: directory
+    owner: "{{ svc_docker_volume_backup_directory_owner }}"
+    group: "{{ svc_docker_volume_backup_directory_group }}"
+    mode: "{{ svc_docker_volume_backup_directory_mode }}"
+
+- name: Gather docker-volume-backup services
+  block:
+    - name: Find variables starting with '{{ __svc_docker_volume_backup_service_var_prefix }}'
+      ansible.builtin.set_fact:
+        __svc_docker_volume_backup_services_matches: "{{ lookup('ansible.builtin.varnames', '^{{ __svc_docker_volume_backup_service_var_prefix }}(_)?.*') | split(',') }}"
+
+    - name: Merge all docker-volume-backup service entries
+      ansible.builtin.set_fact:
+        __svc_docker_volume_backup_services_merged: "{{ __svc_docker_volume_backup_services_merged + lookup('ansible.builtin.vars', item) }}"
+      with_items: "{{ __svc_docker_volume_backup_services_matches }}"
+
+    - name: Merge docker-volume-backup settings
+      ansible.builtin.set_fact:
+        _svc_docker_volume_backup_settings: "{{ svc_docker_volume_backup_default_settings | combine(svc_docker_volume_backup_settings) }}"
+
+    - name: Merge docker-volume-backup volumes
+      ansible.builtin.set_fact:
+        _svc_docker_volume_backup_volumes: "{{ _svc_docker_volume_backup_volumes + (lookup('ansible.builtin.vars', item) | selectattr('volumes', 'defined') | map(attribute='volumes')) | flatten }}"
+      with_items: "{{ __svc_docker_volume_backup_services_matches }}"
+
+    - name: Set required config entries for the services
+      ansible.builtin.set_fact:
+        _svc_docker_volume_backup_services: "{{
+          _svc_docker_volume_backup_services +
+          [
+            item | combine({
+              'config': item.config | default({}) | combine({
+                'BACKUP_FILENAME': 'backup-' ~ item.service ~ '-' ~ (item.alias | default('default')) ~ '-%Y-%m-%dT%H-%M-%S.tar.gz',
+                'BACKUP_LATEST_SYMLINK': 'backup-' ~ item.service ~ '-' ~ (item.alias | default('default')) ~ '-latest.tar.gz',
+                'BACKUP_PRUNING_PREFIX': 'backup-' ~ item.service ~ '-' ~ (item.alias | default('default')) ~ '-',
+                'BACKUP_STOP_DURING_BACKUP_LABEL': item.stop | default([]) | join (',')
+              })
+            })
+          ]
+          }}"
+      with_items: "{{ __svc_docker_volume_backup_services_merged }}"
+
+- name: Manage docker-volume-backup config files
+  block:
+    - name: Ensure config.d subdirectory is present
+      ansible.builtin.file:
+        path: "{{ svc_docker_volume_backup_confd_directory_path }}"
+        state: directory
+        owner: "{{ svc_docker_volume_backup_directory_owner }}"
+        group: "{{ svc_docker_volume_backup_directory_group }}"
+        mode: "{{ svc_docker_volume_backup_directory_mode }}"
+
+    - name: Write service configs to file
+      ansible.builtin.template:
+        src: etc/dockervolumebackup/conf.d/template.conf.j2
+        dest: "{{ svc_docker_volume_backup_confd_directory_path }}/{{ item.service }}-{{ item.alias | default('default') }}.conf"
+        owner: "{{ svc_docker_volume_backup_directory_owner }}"
+        group: "{{ svc_docker_volume_backup_directory_group }}"
+        mode: "{{ svc_docker_volume_backup_file_mode }}"
+      vars:
+        _svc_backup_service_name: "{{ item.service }}"
+        _svc_backup_service_alias: "{{ item.alias | default('default') }}"
+        _docker_volume_backup_config: "{{ _svc_docker_volume_backup_settings | combine(item.config | default({})) }}"
+        _docker_volume_backup_volumes: "{{ item.volumes | default([]) }}"
+      with_items: "{{ _svc_docker_volume_backup_services }}"
+
+- name: Manage service files
+  block:
+    - name: Write docker-volume-backup environment variables to file
+      ansible.builtin.template:
+        src: template.env.j2
+        dest: "{{ svc_docker_volume_backup_env_file_path }}"
+        owner: "{{ svc_docker_volume_backup_directory_owner }}"
+        group: "{{ svc_docker_volume_backup_directory_group }}"
+        mode: "{{ svc_docker_volume_backup_env_file_mode }}"
+        backup: true
+      vars:
+        _env_vars: "{{ svc_docker_volume_backup_env_vars }}"
+      register: docker_volume_backup_env_file_output
+
+    - name: Copy compose service file into place
+      ansible.builtin.template:
+        src: compose/docker-volume-backup.yml.j2
+        dest: "{{ svc_docker_volume_backup_compose_path }}"
+        owner: "{{ svc_docker_volume_backup_directory_owner }}"
+        group: "{{ svc_docker_volume_backup_directory_group }}"
+        mode: "{{ svc_docker_volume_backup_directory_mode }}"
+        backup: true
+        validate: docker compose -f %s config -q
+      register: compose_file_output
+
+# - name: Take down services due to changed compose file
+#   community.docker.docker_compose_v2:
+#     project_src: "{{ svc_docker_volume_backup_directory_path }}"
+#     files: "{{ compose_file_output.backup_file }}"
+#     state: absent
+#     remove_orphans: true
+#   when: compose_file_output.backup_file is defined
+
+# - name: Pull container image
+#   community.docker.docker_image:
+#     name: "{{ item }}"
+#     source: pull
+#   with_items:
+#     - "{{ svc_docker_volume_backup_container_image }}"
+
+# - name: Deploy docker-volume-backup services
+#   community.docker.docker_compose_v2:
+#     project_src: "{{ svc_docker_volume_backup_directory_path }}"
+#     state: "{{ 'present' if svc_use_docker_volume_backup else 'absent' }}"
+#     wait: true
+#     wait_timeout: "{{ svc_compose_wait_timeout }}"
+#   register: deploy_docker_volume_backup_services_output
+...

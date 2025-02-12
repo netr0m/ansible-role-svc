@@ -1,0 +1,29 @@
+---
+# Prefix for variables defining the services to include
+__svc_docker_volume_backup_service_var_prefix: "svc_docker_volume_backup_services"
+# Placeholder for the merged services entries
+__svc_docker_volume_backup_services_merged: []
+# Placeholder for the processed services entries
+_svc_docker_volume_backup_services: []
+# Placeholder for merged settings
+_svc_docker_volume_backup_settings: {}
+# Placeholder for volumes to include
+_svc_docker_volume_backup_volumes: []
+
+# Default settings
+svc_docker_volume_backup_default_settings:
+  BACKUP_CRON_EXPRESSION: "{{ svc_docker_volume_backup_schedule }}"
+  BACKUP_ARCHIVE: "{{ svc_docker_volume_backup_archive }}"
+  BACKUP_STOP_SERVICE_TIMEOUT: "{{ svc_docker_volume_backup_stop_service_timeout }}"
+  BACKUP_RETENTION_DAYS: "{{ svc_docker_volume_backup_retention_days }}"
+  # See https://offen.github.io/docker-volume-backup/how-tos/use-custom-docker-host.html
+  DOCKER_HOST: "tcp://{{ svc_socketproxy_container_hostname }}:2375"
+
+# Environment variables for the docker-volume-backup container
+svc_docker_volume_backup_env_vars:
+  # See https://offen.github.io/docker-volume-backup/how-tos/use-custom-docker-host.html
+  DOCKER_HOST: "tcp://{{ svc_socketproxy_container_hostname }}:2375"
+  PUID: "{{ svc_user_uid | string }}"
+  PGID: "{{ svc_group_gid | string }}"
+  TZ: "{{ svc_tz | default('Etc/UTC') | string }}"
+...

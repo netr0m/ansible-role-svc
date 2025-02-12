@@ -23,6 +23,7 @@ svc_directory_path: '/opt/netr0m.svc'
 svc_directory_owner: "{{ svc_user_name }}"
 svc_directory_group: "{{ svc_group_name }}"
 svc_directory_mode: "0740"
+svc_file_mode: "0640"
 
 ### Docker ###
 # Default restart policy
@@ -40,6 +41,8 @@ svc_log_options:
 ### Services ###
 # Configure Traefik
 svc_use_traefik: true
+# Configure docker-volume-backup
+svc_use_docker_volume_backup: true
 
 ### Access Control Lists ###
 # Define ACL definitions. See https://docs.ansible.com/ansible/latest/collections/ansible/posix/acl_module.html.

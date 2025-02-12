@@ -14,7 +14,7 @@ services:
     labels:
       com.centurylinklabs.watchtower.enable: 'false'
     networks:
-      - socketproxy_net
+      - {{ svc_docker_socket_proxy_network_name }}
 
   {{ svc_traefik_service_name }}:
     image: {{ svc_traefik_container_image }}
@@ -37,7 +37,7 @@ services:
       traefik.http.routers.{{ svc_traefik_service_name }}-rtr.service: api@internal
       traefik.http.routers.{{ svc_traefik_service_name }}-rtr.middlewares: lan-mwr@file
     networks:
-      - socketproxy_net
+      - {{ svc_docker_socket_proxy_network_name }}
       - {{ svc_docker_network_name }}
     ports:
       - {{ svc_traefik_port_http }}:80
@@ -67,7 +67,7 @@ services:
 {% endif %}
 
 networks:
-  socketproxy_net:
+  {{ svc_docker_socket_proxy_network_name }}:
     driver: bridge
     internal: true
   {{ svc_docker_network_name }}:
