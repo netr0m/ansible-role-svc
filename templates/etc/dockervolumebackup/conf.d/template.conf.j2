@@ -3,7 +3,7 @@
 
 ## {{ _svc_backup_service_name }}-{{ _svc_backup_service_alias }}
 
-BACKUP_SOURCES="{{ ['/backup/'] | product(_docker_volume_backup_volumes) | map('join') | list | join(',') }}"
+BACKUP_SOURCES="/backup/{{ _svc_backup_service_name }}"
 {% for key, val in _docker_volume_backup_config.items() %}
 {% if val != "" %}
 {{ key }}="{{ val }}"
