@@ -12,8 +12,10 @@ services:
     volumes:
       - {{ svc_docker_volume_backup_confd_directory_path }}:/etc/dockervolumebackup/conf.d
       - {{ svc_docker_volume_backup_archive_directory_path }}:{{ svc_docker_volume_backup_archive }}
-{% for vol in _svc_docker_volume_backup_volumes %}
-      - {{ vol }}:/backup/{{ vol }}:ro
+{% for svc, vols in _svc_docker_volume_backup_volumes.items() %}
+{% for vol in vols %}
+      - {{ vol }}:/backup/{{ svc }}/{{ vol }}:ro
+{% endfor %}
 {% endfor %}
     mem_limit: {{ svc_docker_volume_backup_container_memory }}
     labels:
@@ -24,9 +26,11 @@ services:
       - {{ svc_docker_socket_proxy_network_name }}
 {% if _svc_docker_volume_backup_volumes | length > 0 %}
 volumes:
-{% for vol in _svc_docker_volume_backup_volumes %}
+{% for vols in _svc_docker_volume_backup_volumes.values() %}
+{% for vol in vols %}
   {{ vol }}:
     external: 'true'
+{% endfor %}
 {% endfor %}
 {% endif %}
 

@@ -37,6 +37,8 @@ svc_log_options:
   max-size: 20m
   max-file: '5'
   compress: 'true'
+# Internal only (isolated) network for docker-socket-proxy ('true'|'false')
+svc_docker_socket_proxy_network_internal: 'true'
 
 ### Services ###
 # Configure Traefik

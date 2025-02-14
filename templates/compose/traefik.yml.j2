@@ -68,9 +68,12 @@ services:
 
 networks:
   {{ svc_docker_socket_proxy_network_name }}:
+    name: {{ svc_docker_socket_proxy_network_name }}
     driver: bridge
-    internal: true
+    internal: "{{ svc_docker_socket_proxy_network_internal }}"
   {{ svc_docker_network_name }}:
+    name: {{ svc_docker_network_name }}
     driver: bridge
   {{ svc_docker_host_network_name }}:
+    name: {{ svc_docker_host_network_name }}
     driver: macvlan

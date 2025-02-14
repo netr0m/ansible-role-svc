@@ -8,7 +8,7 @@ _svc_docker_volume_backup_services: []
 # Placeholder for merged settings
 _svc_docker_volume_backup_settings: {}
 # Placeholder for volumes to include
-_svc_docker_volume_backup_volumes: []
+_svc_docker_volume_backup_volumes: {}
 
 # Default settings
 svc_docker_volume_backup_default_settings:
