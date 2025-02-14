@@ -85,10 +85,16 @@
         _env_vars: "{{ svc_traefik_env_vars | combine(svc_traefik_acme_settings) }}"
       register: traefik_env_file_output
 
-    - name: Set required socket-proxy permissions if backups are enabled
+    - name: Set required configurations for docker-socket-proxy when using docker-volume-backup
       when: svc_use_docker_volume_backup
-      ansible.builtin.set_fact:
-        svc_socketproxy_settings: "{{ svc_socketproxy_settings | combine({'INFO': '1', 'NODES': '1', 'TASKS': '1', 'POST': '1'}) }}"
+      block:
+        - name: Set required socket-proxy permissions if backups are enabled
+          ansible.builtin.set_fact:
+            svc_socketproxy_settings: "{{ svc_socketproxy_settings | combine({'INFO': '1', 'NODES': '1', 'TASKS': '1', 'POST': '1'}) }}"
+
+        - name: Set 'svc_docker_socket_proxy_network_internal' to false
+          ansible.builtin.set_fact:
+            svc_docker_socket_proxy_network_internal: 'false'
 
     - name: Write socket-proxy environment variables to file
       ansible.builtin.template:
