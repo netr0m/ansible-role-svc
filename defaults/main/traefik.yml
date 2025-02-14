@@ -1,7 +1,7 @@
 ---
 ### Traefik ###
 # Version of the traefik Docker image to use (see 'svc_traefik_container_image')
-svc_traefik_version: latest
+svc_traefik_version: v3.3
 
 ## Traefik settings
 # Log level
