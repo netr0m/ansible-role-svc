@@ -37,12 +37,10 @@ svc_log_options:
   max-size: 20m
   max-file: '5'
   compress: 'true'
-# Internal only (isolated) network for docker-socket-proxy ('true'|'false')
-svc_docker_socket_proxy_network_internal: 'true'
-# Subnet for the docker network 'svc_docker_network_name'
-svc_docker_network_subnet: 172.30.0.0/16
 
 ### Services ###
+# Configure docker networks
+svc_manage_docker_networks: true
 # Configure Traefik
 svc_use_traefik: true
 # Configure docker-volume-backup

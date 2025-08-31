@@ -1,0 +1,6 @@
+---
+# Name of the service Docker network (bridge)
+svc_docker_network_name: svc_net
+# Name of the docker-socket-proxy network
+svc_docker_socket_proxy_network_name: socket-proxy_net
+...

@@ -3,12 +3,6 @@
 # Shared labels for the Docker volumes
 svc_docker_volume_shared_labels:
   netr0m.ansible-role: svc
-# Name of the service Docker network (bridge)
-svc_docker_network_name: svc_net
-# Name of the service Docker network (host)
-svc_docker_host_network_name: svc_hostnet
-# Name of the docker-socket-proxy network
-svc_docker_socket_proxy_network_name: socket-proxy_net
 
 ### Access Control ###
 # Prefix for the access control list entries variables to look up
