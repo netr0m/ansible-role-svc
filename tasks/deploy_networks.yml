@@ -1,0 +1,25 @@
+---
+- name: Set 'svc_docker_socket_proxy_network_internal' to false when backups are enabled
+  when: svc_use_docker_volume_backup
+  ansible.builtin.set_fact:
+    svc_docker_socket_proxy_network_internal: 'false'
+
+- name: Deploy docker networks
+  block:
+    - name: Create socket proxy network
+      community.docker.docker_network:
+        name: "{{ svc_docker_socket_proxy_network_name }}"
+        driver: bridge
+        internal: "{{ svc_docker_socket_proxy_network_internal }}"
+        labels:
+          com.docker.compose.network: "{{ svc_docker_socket_proxy_network_name }}"
+
+    - name: Create svc bridge network
+      community.docker.docker_network:
+        name: "{{ svc_docker_network_name }}"
+        driver: bridge
+        ipam_config:
+          - subnet: "{{ svc_docker_network_subnet }}"
+        labels:
+          com.docker.compose.network: "{{ svc_docker_network_name }}"
+...
