@@ -1,7 +1,7 @@
 ---
 ### docker-volume-backup ###
 # Version of the docker-volume-backup Docker image to use (see 'svc_docker_volume_backup_container_image')
-svc_docker_volume_backup_version: v2.43.2
+svc_docker_volume_backup_version: v2.44.0
 
 ## docker-volume-backup settings. See https://offen.github.io/docker-volume-backup/reference/
 svc_docker_volume_backup_settings: {}
