@@ -3,6 +3,9 @@
 # Version of the socket-proxy Docker image to use (see 'svc_socketproxy_container_image')
 svc_socketproxy_version: v0.4.1
 
+# Whether to enable IPv6 inside the socket proxy container
+svc_socketproxy_disable_ipv6: 'true'
+
 # Settings for the docker socket proxy. See https://github.com/Tecnativa/docker-socket-proxy#grant-or-revoke-access-to-certain-api-sections
 svc_socketproxy_settings:
   LOG_LEVEL: "info"

@@ -1,5 +1,6 @@
 ---
 # Environment variables for the docker-socket-proxy container. Required by traefik
 svc_socketproxy_env_vars_baseline:
+  DISABLE_IPV6: "{{ svc_socketproxy_disable_ipv6 }}"
   CONTAINERS: "1"
 ...
