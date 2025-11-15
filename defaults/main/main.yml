@@ -74,6 +74,5 @@ svc_packages_shared:
 # Packages to install. See vars/<ansible_os_family>.yml
 svc_packages: "{{ svc_packages_shared }}"
 # Pip packages to install
-svc_packages_pip:
-  - 'docker'
+svc_packages_pip: []
 ...
