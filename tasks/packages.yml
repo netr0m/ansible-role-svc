@@ -1,11 +1,11 @@
 ---
 - name: Include tasks for 'debian'
   ansible.builtin.include_tasks: packages_debian.yml
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts["os_family"] == 'Debian'
 
 - name: Include tasks for 'archlinux'
   ansible.builtin.include_tasks: packages_archlinux.yml
-  when: ansible_os_family == 'Archlinux'
+  when: ansible_facts["os_family"] == 'Archlinux'
 
 - name: Ensure wanted pip packages are present
   ansible.builtin.pip:
