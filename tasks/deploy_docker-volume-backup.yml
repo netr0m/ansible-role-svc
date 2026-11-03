@@ -11,7 +11,7 @@
   block:
     - name: Find variables starting with '{{ __svc_docker_volume_backup_service_var_prefix }}'
       ansible.builtin.set_fact:
-        __svc_docker_volume_backup_services_matches: "{{ lookup('ansible.builtin.varnames', '^{{ __svc_docker_volume_backup_service_var_prefix }}(_)?.*') | split(',') }}"
+        __svc_docker_volume_backup_services_matches: "{{ lookup('ansible.builtin.varnames', '^' ~ __svc_docker_volume_backup_service_var_prefix ~ '(_)?.*') | split(',') }}"
 
     - name: Merge all docker-volume-backup service entries
       ansible.builtin.set_fact:

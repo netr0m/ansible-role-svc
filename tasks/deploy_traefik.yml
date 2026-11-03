@@ -11,7 +11,7 @@
   block:
     - name: Find variables starting with '{{ __svc_traefik_middleware_var_prefix }}'
       ansible.builtin.set_fact:
-        __svc_traefik_mwr_matches: "{{ lookup('ansible.builtin.varnames', '^{{ __svc_traefik_middleware_var_prefix }}(_)?.*') | split(',') }}"
+        __svc_traefik_mwr_matches: "{{ lookup('ansible.builtin.varnames', '^' ~ __svc_traefik_middleware_var_prefix ~ '(_)?.*') | split(',') }}"
 
     - name: Merge extra Traefik middleware entries
       ansible.builtin.set_fact:
