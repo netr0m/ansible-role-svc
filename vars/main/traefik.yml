@@ -32,6 +32,16 @@ __svc_traefik_middleware_var_prefix: "svc_traefik_extra_middlewares"
 # Placeholder for the combined extra traefik middleware entries
 __svc_traefik_extra_middlewares: {}
 
+# Prefix for the extra Traefik entryPoints:
+__svc_traefik_entrypoint_var_prefix: "svc_traefik_extra_entrypoints"
+# Placeholder for the combined extra traefik entryPoints entries
+__svc_traefik_extra_entrypoints: []
+
+# Prefix for the extra Traefik certResolvers:
+__svc_traefik_certresolver_var_prefix: "svc_traefik_extra_certresolvers"
+# Placeholder for the combined extra traefik certResolvers entries
+__svc_traefik_extra_certresolvers: {}
+
 # ACME file permissions
 svc_traefik_acme_file_mode: "0600"
 ...

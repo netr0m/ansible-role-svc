@@ -18,6 +18,28 @@
         __svc_traefik_extra_middlewares: "{{ __svc_traefik_extra_middlewares | combine(lookup('ansible.builtin.vars', item)) }}"
       with_items: "{{ __svc_traefik_mwr_matches }}"
 
+- name: Gather Traefik entrypoint entries
+  block:
+    - name: Find variables starting with '{{ __svc_traefik_entrypoint_var_prefix }}'
+      ansible.builtin.set_fact:
+        __svc_traefik_entrypoint_matches: "{{ lookup('ansible.builtin.varnames', '^' ~ __svc_traefik_entrypoint_var_prefix ~ '(_)?.*') | split(',') }}"
+
+    - name: Merge extra Traefik entrypoint entries
+      ansible.builtin.set_fact:
+        __svc_traefik_extra_entrypoints: "{{ __svc_traefik_extra_entrypoints + lookup('ansible.builtin.vars', item) }}"
+      with_items: "{{ __svc_traefik_entrypoint_matches }}"
+
+- name: Gather Traefik certResolvers entries
+  block:
+    - name: Find variables starting with '{{ __svc_traefik_certresolver_var_prefix }}'
+      ansible.builtin.set_fact:
+        __svc_traefik_certresolver_matches: "{{ lookup('ansible.builtin.varnames', '^' ~ __svc_traefik_certresolver_var_prefix ~ '(_)?.*') | split(',') }}"
+
+    - name: Merge extra Traefik certResolver entries
+      ansible.builtin.set_fact:
+        __svc_traefik_extra_certresolvers: "{{ __svc_traefik_extra_certresolvers | combine(lookup('ansible.builtin.vars', item)) }}"
+      with_items: "{{ __svc_traefik_certresolver_matches }}"
+
 - name: Manage traefik configuration
   block:
     - name: Ensure traefik config subdirectory is present

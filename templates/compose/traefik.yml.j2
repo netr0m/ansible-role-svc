@@ -42,6 +42,11 @@ services:
     ports:
       - {{ svc_traefik_port_http }}:80
       - {{ svc_traefik_port_https }}:443
+{% for entrypoint in __svc_traefik_extra_entrypoints %}
+{% if entrypoint.publish | default(false) %}
+      - {{ entrypoint.port | regex_replace('/.*', '') }}:{{ entrypoint.port }}
+{% endif %}
+{% endfor %}
     depends_on:
       - {{ svc_socketproxy_service_name }}
 
