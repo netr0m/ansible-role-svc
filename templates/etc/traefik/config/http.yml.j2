@@ -26,3 +26,9 @@ http:
           - url: {{ service.protocol | default(https) }}://{{ service.ip_addr }}:{{ service.port }}
 
   {% endfor %}
+
+{% if __svc_traefik_extra_tls_options %}
+tls:
+  options:
+    {{ __svc_traefik_extra_tls_options | to_nice_yaml(indent=2) | indent(4) }}
+{% endif %}

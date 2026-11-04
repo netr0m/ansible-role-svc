@@ -40,6 +40,17 @@
         __svc_traefik_extra_certresolvers: "{{ __svc_traefik_extra_certresolvers | combine(lookup('ansible.builtin.vars', item)) }}"
       with_items: "{{ __svc_traefik_certresolver_matches }}"
 
+- name: Gather Traefik TLS options entries
+  block:
+    - name: Find variables starting with '{{ __svc_traefik_tls_options_var_prefix }}'
+      ansible.builtin.set_fact:
+        __svc_traefik_tls_options_matches: "{{ lookup('ansible.builtin.varnames', '^' ~ __svc_traefik_tls_options_var_prefix ~ '(_)?.*') | split(',') }}"
+
+    - name: Merge extra Traefik TLS options entries
+      ansible.builtin.set_fact:
+        __svc_traefik_extra_tls_options: "{{ __svc_traefik_extra_tls_options | combine(lookup('ansible.builtin.vars', item)) }}"
+      with_items: "{{ __svc_traefik_tls_options_matches }}"
+
 - name: Manage traefik configuration
   block:
     - name: Ensure traefik config subdirectory is present
