@@ -42,6 +42,11 @@ __svc_traefik_certresolver_var_prefix: "svc_traefik_extra_certresolvers"
 # Placeholder for the combined extra traefik certResolvers entries
 __svc_traefik_extra_certresolvers: {}
 
+# Prefix for the extra Traefik TLS options:
+__svc_traefik_tls_options_var_prefix: "svc_traefik_extra_tls_options"
+# Placeholder for the combined extra traefik TLS options entries
+__svc_traefik_extra_tls_options: {}
+
 # ACME file permissions
 svc_traefik_acme_file_mode: "0600"
 ...

@@ -56,6 +56,10 @@ svc_traefik_extra_certresolvers: {}
   #       resolvers:
   #         - 1.1.1.1:53
   #         - 1.0.0.1:53
+# Extra TLS options for Traefik. See templates/etc/traefik/config/http.yml.j2
+svc_traefik_extra_tls_options: {}
+  # example:
+  #   minVersion: VersionTLS12
 # Extra certificates for Traefik. See templates/etc/traefik/traefik.yml.j2
 # First entry in the list will be used as the default, if any
 svc_traefik_extra_certificates: []
