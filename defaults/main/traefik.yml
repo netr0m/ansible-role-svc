@@ -41,8 +41,21 @@ svc_traefik_extra_middlewares: {}
 svc_traefik_extra_entrypoints: []
   # - name: dns
   #   port: 53
+  #   publish: false
   # - name: dnsUdp
   #   port: 53/udp
+# Extra certResolvers for Traefik. See templates/etc/traefik/traefik.yml.j2
+svc_traefik_extra_certresolvers: {}
+  # example:
+  #   acme:
+  #     caServer: https://acme-api.example.com/acme/directory
+  #     storage: /etc/traefik/letsencrypt/acme.json
+  #     dnsChallenge:
+  #       provider: 'cloudflare'
+  #       delayBeforeCheck: 30
+  #       resolvers:
+  #         - 1.1.1.1:53
+  #         - 1.0.0.1:53
 # Extra certificates for Traefik. See templates/etc/traefik/traefik.yml.j2
 # First entry in the list will be used as the default, if any
 svc_traefik_extra_certificates: []

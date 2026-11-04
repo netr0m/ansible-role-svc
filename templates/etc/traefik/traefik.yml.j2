@@ -38,7 +38,7 @@ entryPoints:
             sans:
               - "*.{{ svc_domain }}"
 {% endif %}
-{% for entrypoint in svc_traefik_extra_entrypoints %} 
+{% for entrypoint in __svc_traefik_extra_entrypoints %} 
   {{ entrypoint.name }}:
     address: :{{ entrypoint.port }}
 {% endfor %}
@@ -69,6 +69,9 @@ certificatesResolvers:
         resolvers:
           - 1.1.1.1:53
           - 1.0.0.1:53
+{% if __svc_traefik_extra_certresolvers %}
+  {{ __svc_traefik_extra_certresolvers | to_nice_yaml(indent=2) | indent(2) }}
+{% endif %}
 {% endif %}
 {% if svc_traefik_extra_certificates | length > 0 %}
 tls:
